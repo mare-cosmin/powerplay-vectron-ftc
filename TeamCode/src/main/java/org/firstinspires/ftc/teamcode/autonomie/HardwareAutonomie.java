@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.autonomie;
 
 import androidx.annotation.NonNull;
 
@@ -47,7 +47,7 @@ import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kA;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kStatic;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kV;
 
-public class RoadRunnerHardware extends MecanumDrive{
+public class HardwareAutonomie extends MecanumDrive{
     public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(0, 0, 0);
     public static PIDCoefficients HEADING_PID = new PIDCoefficients(0, 0, 0);
 
@@ -70,7 +70,7 @@ public class RoadRunnerHardware extends MecanumDrive{
     private BNO055IMU imu;
     private VoltageSensor batteryVoltageSensor;
 
-    public RoadRunnerHardware(HardwareMap hardwareMap) {
+    public HardwareAutonomie(HardwareMap hardwareMap) {
         super(kV, kA, kStatic, TRACK_WIDTH, TRACK_WIDTH, LATERAL_MULTIPLIER);
         follower = new HolonomicPIDVAFollower(TRANSLATIONAL_PID, TRANSLATIONAL_PID, HEADING_PID,
                 new Pose2d(0.5, 0.5, Math.toRadians(5.0)), 0.5);
@@ -290,4 +290,6 @@ public class RoadRunnerHardware extends MecanumDrive{
     public static TrajectoryAccelerationConstraint getAccelerationConstraint(double maxAccel) {
         return new ProfileAccelerationConstraint(maxAccel);
     }
+
+
 }

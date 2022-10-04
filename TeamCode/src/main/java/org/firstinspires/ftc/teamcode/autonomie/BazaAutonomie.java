@@ -2,12 +2,10 @@ package org.firstinspires.ftc.teamcode.autonomie;
 
 //import necessary ftc packages
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 
 //import easy opencv packages
-import org.firstinspires.ftc.teamcode.RoadRunnerHardware;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
@@ -20,7 +18,7 @@ public abstract class BazaAutonomie extends LinearOpMode{
 
     @Override
     public void runOpMode() {
-        RoadRunnerHardware robot = new RoadRunnerHardware(hardwareMap);
+        HardwareAutonomie robot = new HardwareAutonomie(hardwareMap);
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "webcam"), cameraMonitorViewId);
         pipeline = new SignalReaderPipeline();
