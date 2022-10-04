@@ -10,45 +10,57 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class HardwareTeleOp {
+    //define motors
     public ElapsedTime runtime = new ElapsedTime();
 
-    //define motors
-    public DcMotorEx motor_brat = null;
     public DcMotor leftFront = null;
     public DcMotor rightFront = null;
     public DcMotor leftBack = null;
     public DcMotor rightBack = null;
+    public DcMotor motor_brat = null;
+    public DcMotor motor_brat2 = null;
 
     //define servos
-    public Servo servo_brat = null;
-    public Servo servo_brat2 = null;
-    public Servo servo_gripper = null;
 
-//    double COUNTS_CM_CHASSIS = 537.7 / (9.6 * 3.1415);
-//    double COUNTS_CM_LIFT = 537.7 / ( 3.8 * 3.1415);
-
-    //corectii
-
-
-
-
-    public void initialize(HardwareMap hardwareMap) {
+    public void initialize(HardwareMap hardwareMap){
+        //initialize motors
         leftFront = hardwareMap.get(DcMotor.class, "leftFront");
         rightFront = hardwareMap.get(DcMotor.class, "rightFront");
         leftBack = hardwareMap.get(DcMotor.class, "leftBack");
         rightBack = hardwareMap.get(DcMotor.class, "rightBack");
+        motor_brat = hardwareMap.get(DcMotor.class, "motor_brat");
+        motor_brat2 = hardwareMap.get(DcMotor.class, "motor_brat2");
 
-        leftFront.setDirection(DcMotor.Direction.FORWARD);
-        rightFront.setDirection(DcMotor.Direction.REVERSE);
-        leftBack.setDirection(DcMotor.Direction.FORWARD);
-        rightBack.setDirection(DcMotor.Direction.REVERSE);
+        //initialize servos
 
-        leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        //set motor directions
+        leftFront.setDirection(DcMotor.Direction.REVERSE);
+        rightFront.setDirection(DcMotor.Direction.FORWARD);
+        leftBack.setDirection(DcMotor.Direction.REVERSE);
+        rightBack.setDirection(DcMotor.Direction.FORWARD);
+        motor_brat.setDirection(DcMotor.Direction.FORWARD);
+        motor_brat2.setDirection(DcMotor.Direction.REVERSE);
 
-        //defining other motors and servos
+        //set motor modes
+        leftFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        leftBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motor_brat.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motor_brat2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        //set motor powers
+        leftFront.setPower(0);
+        rightFront.setPower(0);
+        leftBack.setPower(0);
+        rightBack.setPower(0);
+        motor_brat.setPower(0);
+        motor_brat2.setPower(0);
+
+        //set servo directions
+
+        //set servo positions
+
     }
     public void runToPositionCHASSIS(){
         leftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
