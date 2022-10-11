@@ -20,46 +20,69 @@ public class HardwareTeleOp {
     public DcMotor motor_brat = null;
     public DcMotor motor_brat2 = null;
 
+    public boolean no_roti_test = true;
+    private boolean no_brat_test = false;
+
+    private boolean only_roti_test = false;
+
+
     //define servos
+    public Servo gripper = null;
+
 
     public void initialize(HardwareMap hardwareMap){
         //initialize motors
-        leftFront = hardwareMap.get(DcMotor.class, "leftFront");
-        rightFront = hardwareMap.get(DcMotor.class, "rightFront");
-        leftBack = hardwareMap.get(DcMotor.class, "leftBack");
-        rightBack = hardwareMap.get(DcMotor.class, "rightBack");
+        if(!no_roti_test) {
+            leftFront = hardwareMap.get(DcMotor.class, "leftFront");
+            rightFront = hardwareMap.get(DcMotor.class, "rightFront");
+            leftBack = hardwareMap.get(DcMotor.class, "leftBack");
+            rightBack = hardwareMap.get(DcMotor.class, "rightBack");
+            motor_brat = hardwareMap.get(DcMotor.class, "motor_brat");
+            motor_brat2 = hardwareMap.get(DcMotor.class, "motor_brat2");
+
+            //initialize servos
+
+            //set motor directions
+            leftFront.setDirection(DcMotor.Direction.REVERSE);
+            rightFront.setDirection(DcMotor.Direction.FORWARD);
+            leftBack.setDirection(DcMotor.Direction.REVERSE);
+            rightBack.setDirection(DcMotor.Direction.FORWARD);
+            motor_brat.setDirection(DcMotor.Direction.FORWARD);
+            motor_brat2.setDirection(DcMotor.Direction.REVERSE);
+
+            //set motor modes
+            leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            motor_brat.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            motor_brat2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+            //set motor powers
+            leftFront.setPower(0);
+            rightFront.setPower(0);
+            leftBack.setPower(0);
+            rightBack.setPower(0);
+            motor_brat.setPower(0);
+            motor_brat2.setPower(0);
+        }
+        if(!only_roti_test) {
+            gripper = hardwareMap.get(Servo.class, "gripper");
+            //set servo directions
+            gripper.setDirection(Servo.Direction.FORWARD);
+            //set servo positions
+            gripper.setPosition(0);
+        }
+
         motor_brat = hardwareMap.get(DcMotor.class, "motor_brat");
         motor_brat2 = hardwareMap.get(DcMotor.class, "motor_brat2");
-
-        //initialize servos
-
-        //set motor directions
-        leftFront.setDirection(DcMotor.Direction.REVERSE);
-        rightFront.setDirection(DcMotor.Direction.FORWARD);
-        leftBack.setDirection(DcMotor.Direction.REVERSE);
-        rightBack.setDirection(DcMotor.Direction.FORWARD);
         motor_brat.setDirection(DcMotor.Direction.FORWARD);
         motor_brat2.setDirection(DcMotor.Direction.REVERSE);
-
-        //set motor modes
-        leftFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rightFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        leftBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rightBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        motor_brat.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        motor_brat2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-        //set motor powers
-        leftFront.setPower(0);
-        rightFront.setPower(0);
-        leftBack.setPower(0);
-        rightBack.setPower(0);
+        motor_brat.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motor_brat2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motor_brat.setPower(0);
         motor_brat2.setPower(0);
 
-        //set servo directions
-
-        //set servo positions
 
     }
     public void runToPositionCHASSIS(){
@@ -89,6 +112,10 @@ public class HardwareTeleOp {
         rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         leftBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    }
+    public void move_brat(double power){
+        motor_brat.setPower(power);
+        motor_brat2.setPower(power);
     }
 
     public void move(double power,double distance, int direction) {
@@ -194,5 +221,28 @@ public class HardwareTeleOp {
     }
 
     //functii pentru celelalte motoare
+
+    public void runToPositionBRAT(){
+        motor_brat.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motor_brat2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    }
+    public void setPowerBRAT(double power){
+        motor_brat.setPower(power);
+        motor_brat2.setPower(power);
+    }
+    public void setPowerZeroBRAT(){
+        motor_brat.setPower(0);
+        motor_brat2.setPower(0);
+    }
+    public void stopAndResetEncodersBRAT(){
+        motor_brat.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motor_brat2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    }
+    public void closeGripper(){
+        gripper.setPosition(1);
+    }
+    public void openGripper(){
+        gripper.setPosition(0);
+    }
 }
 
