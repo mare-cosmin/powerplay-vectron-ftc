@@ -12,12 +12,10 @@ public class BazaTeleOp extends OpMode {
     public ElapsedTime runtime = new ElapsedTime();
     public HardwareTeleOp robot = new HardwareTeleOp();
 
-
-
     double x;
     double t = 0;
 
-    double joyScale;
+    double joyScale = 1;
 
     public void init() {
         robot.initialize(hardwareMap);
@@ -33,41 +31,59 @@ public class BazaTeleOp extends OpMode {
 
     @Override
     public void loop() {
-        if (gamepad1.left_trigger > 0.5){
-            robot.openGripper();
-            telemetry.addData("Gripper", "Open");
-        }else if (gamepad1.right_trigger > 0.5){
-            robot.closeGripper();
-            telemetry.addData("Gripper", "Closed");
+        if(gamepad1.back) {
+            robot.rrmode = true;
         }
-        if(gamepad1.x) {
-            robot.motor_brat.setPower(0.5);
-            robot.motor_brat2.setPower(0.5);
-            telemetry.addData("Brat", "Up");
-        }else if(gamepad1.y) {
-            robot.motor_brat.setPower(-0.5);
-            robot.motor_brat2.setPower(-0.5);
-            telemetry.addData("Brat", "Down");
-        }else{
-            robot.motor_brat.setPower(0);
-            robot.motor_brat2.setPower(0);
-            telemetry.addData("Brat", "Stopped");
+        if(gamepad1.start) {
+            joyScale = 1;
         }
+        if(gamepad1.back){
+            joyScale = 0.5;
+        }
+        if(gamepad1.left_trigger> 0.5){
+            if(gamepad1.right_trigger> 0.5){
+                robot.rrswitch(!robot.rrmode);
+            }
+        }
+//        if(robot.rrmode) {
+            if (gamepad2.left_trigger > 0.5) {
+                robot.openGripper();
+                telemetry.addData("Gripper", "Open");
+            } else if (gamepad2.right_trigger > 0.5) {
+                robot.closeGripper();
+                telemetry.addData("Gripper", "Closed");
+            }
+            if(robot.servo_brat_test){
+//                telemetry.addData("position_sus", robot.servo_brat_sus.getPosition());
+//                telemetry.addData("position_jos", robot.servo_brat_jos.getPosition());
+            }
+            telemetry.addData("pos-lift1", robot.lift1.getCurrentPosition());
+            telemetry.addData("pos-lift2", robot.lift2.getCurrentPosition());
+            telemetry.addData("target-lift1", robot.lift1.getTargetPosition());
+            telemetry.addData("target-lift2", robot.lift2.getTargetPosition());
+            telemetry.addData("height", robot.robot_height);
+            if (gamepad2.a){
+                robot.pickup_fata();
+            }
+            if(gamepad2.y){
+                robot.cone_up_high_fata();
+            }
+            if(gamepad2.x){
+                robot.cone_up_mid_fata();
+            }
+            if(gamepad2.b){
+                robot.cone_up_low_fata();
+            }
+//        }
+        if (robot.chassis_test) {
 
-        if(!robot.no_roti_test) {
-
-            double drive = gamepad1.left_stick_y;
-            double strafe = gamepad1.left_stick_x;
-            double twist = gamepad1.right_stick_x;
-            ElapsedTime timpRate = new ElapsedTime();
-            ElapsedTime salut = new ElapsedTime();
-            /*
-
-             */
+            double drive = -gamepad1.left_stick_y;
+            double strafe = -gamepad1.left_stick_x;
+            double twist = (gamepad1.right_bumper ? 0.5 : gamepad1.left_bumper ? -0.5 : 0);
             double[] speeds = {
-                    (drive - strafe + twist),
-                    (drive + strafe - twist),
                     (drive + strafe + twist),
+                    (drive + strafe - twist),
+                    (drive - strafe + twist),
                     (drive - strafe - twist)
             };
             // Because we are adding vectors and motors only take values between
@@ -88,11 +104,10 @@ public class BazaTeleOp extends OpMode {
             }
 
             // apply the calculated values to the motors.
-            robot.leftFront.setPower(speeds[3] * joyScale);
-            robot.rightFront.setPower(speeds[2] * joyScale);
-            robot.leftBack.setPower(speeds[1] * joyScale);
-            robot.rightBack.setPower(speeds[0] * joyScale);
+            robot.leftFront.setPower(speeds[0] * joyScale);
+            robot.rightFront.setPower(speeds[1] * joyScale);
+            robot.leftBack.setPower(speeds[2] * joyScale);
+            robot.rightBack.setPower(speeds[3] * joyScale);
         }
     }
 }
-

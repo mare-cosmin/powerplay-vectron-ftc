@@ -17,73 +17,91 @@ public class HardwareTeleOp {
     public DcMotor rightFront = null;
     public DcMotor leftBack = null;
     public DcMotor rightBack = null;
-    public DcMotor motor_brat = null;
-    public DcMotor motor_brat2 = null;
+    public DcMotor lift1 = null;
+    public DcMotor lift2 = null;
 
-    public boolean no_roti_test = true;
-    private boolean no_brat_test = false;
+    public boolean rrmode = true;
 
-    private boolean only_roti_test = false;
+    public boolean chassis_test = true;
+    public boolean lift_test = true;
+    public boolean gripper_test = true;
+    public boolean servo_brat_test = true;
+    public boolean all_in = false;
+    public enum Height{
+        HIGH,
+        MEDIUM,
+        LOW
+    }
 
+    public Height robot_height = Height.LOW;
 
     //define servos
     public Servo gripper = null;
-
+    public Servo servo_brat_sus = null;
+    public Servo servo_brat_jos = null;
 
     public void initialize(HardwareMap hardwareMap){
-        //initialize motors
-        if(!no_roti_test) {
+        if(chassis_test || all_in) {
+            //initialize motors
             leftFront = hardwareMap.get(DcMotor.class, "leftFront");
             rightFront = hardwareMap.get(DcMotor.class, "rightFront");
             leftBack = hardwareMap.get(DcMotor.class, "leftBack");
             rightBack = hardwareMap.get(DcMotor.class, "rightBack");
-            motor_brat = hardwareMap.get(DcMotor.class, "motor_brat");
-            motor_brat2 = hardwareMap.get(DcMotor.class, "motor_brat2");
-
-            //initialize servos
-
             //set motor directions
             leftFront.setDirection(DcMotor.Direction.REVERSE);
             rightFront.setDirection(DcMotor.Direction.FORWARD);
             leftBack.setDirection(DcMotor.Direction.REVERSE);
             rightBack.setDirection(DcMotor.Direction.FORWARD);
-            motor_brat.setDirection(DcMotor.Direction.FORWARD);
-            motor_brat2.setDirection(DcMotor.Direction.REVERSE);
 
             //set motor modes
             leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            motor_brat.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            motor_brat2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+            leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            leftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            rightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
             //set motor powers
             leftFront.setPower(0);
             rightFront.setPower(0);
             leftBack.setPower(0);
             rightBack.setPower(0);
-            motor_brat.setPower(0);
-            motor_brat2.setPower(0);
         }
-        if(!only_roti_test) {
+        if(gripper_test || all_in) {
+            //initialize servos
             gripper = hardwareMap.get(Servo.class, "gripper");
-            //set servo directions
             gripper.setDirection(Servo.Direction.FORWARD);
-            //set servo positions
-            gripper.setPosition(0);
+            gripper.setPosition(0.08);
+        }
+        if(servo_brat_test || all_in) {
+//            servo_brat_jos = hardwareMap.get(Servo.class, "servo_brat_jos");
+//            servo_brat_sus = hardwareMap.get(Servo.class, "servo_brat_sus");
+//
+//            servo_brat_jos.setDirection(Servo.Direction.FORWARD);
+//            servo_brat_sus.setDirection(Servo.Direction.FORWARD);
+//            servo_brat_jos.setPosition(0);
+//            servo_brat_sus.setPosition(0.5);
         }
 
-        motor_brat = hardwareMap.get(DcMotor.class, "motor_brat");
-        motor_brat2 = hardwareMap.get(DcMotor.class, "motor_brat2");
-        motor_brat.setDirection(DcMotor.Direction.FORWARD);
-        motor_brat2.setDirection(DcMotor.Direction.REVERSE);
-        motor_brat.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motor_brat2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motor_brat.setPower(0);
-        motor_brat2.setPower(0);
+        if(lift_test || all_in) {
+            lift1 = hardwareMap.get(DcMotor.class, "lift_jos");
+            lift1.setDirection(DcMotor.Direction.FORWARD);
+            lift1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            lift1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            lift1.setPower(0);
 
+            lift2 = hardwareMap.get(DcMotor.class, "lift_sus");
+            lift2.setDirection(DcMotor.Direction.FORWARD);
+            lift2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            lift2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            lift2.setPower(0);
 
+            lift1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            lift2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        }
     }
     public void runToPositionCHASSIS(){
         leftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -113,136 +131,80 @@ public class HardwareTeleOp {
         leftBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
-    public void move_brat(double power){
-        motor_brat.setPower(power);
-        motor_brat2.setPower(power);
-    }
-
-    public void move(double power,double distance, int direction) {
-        //moves with respect to direction:
-        //if direction=1, moves forward
-        //if direction=2, moves backward
-        //if direction=3, moves left
-        //if direction=4, moves right
-
-        stopAndResetEncodersCHASSIS();
-
-        /*
-        int target =  (int)(distance * COUNTS_CM_CHASSIS * CORECTIE_FORWARD);
-        if (direction == 1){
-            leftFront.setTargetPosition(target);
-            rightFront.setTargetPosition(target);
-            leftBack.setTargetPosition(target);
-            rightBack.setTargetPosition(target);
-        }else if (direction == 2) {
-            leftFront.setTargetPosition(-target);
-            rightFront.setTargetPosition(-target);
-            leftBack.setTargetPosition(-target);
-            rightBack.setTargetPosition(-target);
-        }else if (direction == 3) {
-            leftFront.setTargetPosition(-target);
-            rightFront.setTargetPosition(target);
-            leftBack.setTargetPosition(target);
-            rightBack.setTargetPosition(-target);
-        }else if (direction == 4) {
-            leftFront.setTargetPosition(target);
-            rightFront.setTargetPosition(-target);
-            leftBack.setTargetPosition(-target);
-            rightBack.setTargetPosition(target);
-        }else{
-            telmetry.addData("Error","Direction not valid");
-        }
-        */
-
-
-        runToPositionCHASSIS();
-
-        runtime.reset();
-
-        setPowerCHASSIS(power);
-
-        setPowerZeroCHASSIS();
-
-        rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        leftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-        leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        stopAndResetEncodersCHASSIS();
-    }
-    public void turn(double power, double distance, int direction) {
-        //turns with respect to direction:
-        //if direction=1, turns left
-        //if direction=2, turns right
-
-        stopAndResetEncodersCHASSIS();
-
-        /*
-        int target =  (int)(distance * COUNTS_CM_CHASSIS * CORECTIE_TURN);
-        if (direction == 1){
-            leftFront.setTargetPosition(-target);
-            rightFront.setTargetPosition(target);
-            leftBack.setTargetPosition(-target);
-            rightBack.setTargetPosition(target);
-        }else if (direction == 2) {
-            leftFront.setTargetPosition(target);
-            rightFront.setTargetPosition(-target);
-            leftBack.setTargetPosition(target);
-            rightBack.setTargetPosition(-target);
-        }else{
-            telemetry.addData("Error", "Invalid direction");
-            telemetry.update();
-        }
-        */
-        runToPositionCHASSIS();
-
-        runtime.reset();
-
-        setPowerCHASSIS(power);
-
-        setPowerZeroCHASSIS();
-
-        rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        leftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-        leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        stopAndResetEncodersCHASSIS();
-    }
-
     //functii pentru celelalte motoare
 
-    public void runToPositionBRAT(){
-        motor_brat.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        motor_brat2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-    }
-    public void setPowerBRAT(double power){
-        motor_brat.setPower(power);
-        motor_brat2.setPower(power);
-    }
-    public void setPowerZeroBRAT(){
-        motor_brat.setPower(0);
-        motor_brat2.setPower(0);
-    }
-    public void stopAndResetEncodersBRAT(){
-        motor_brat.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motor_brat2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-    }
     public void closeGripper(){
         gripper.setPosition(1);
     }
     public void openGripper(){
         gripper.setPosition(0);
     }
+    public void lift_pos_down(int pos){
+        lift1.setTargetPosition(pos);
+        lift2.setTargetPosition(-pos);
+
+        if(lift1.getCurrentPosition() > pos && lift2.getCurrentPosition() < -pos){
+            lift1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            lift2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            lift1.setPower(1);
+            lift2.setPower(1);
+        }else{
+            lift1.setPower(0);
+            lift2.setPower(0);
+        }
+    }
+    public void lift_pos_up(int pos){
+        lift1.setTargetPosition(pos);
+        lift2.setTargetPosition(-pos);
+
+        if(lift1.getCurrentPosition() < pos && lift2.getCurrentPosition() < pos){
+            lift1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            lift2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            lift1.setPower(1);
+            lift2.setPower(1);
+        }else{
+            lift1.setPower(0);
+            lift2.setPower(0);
+        }
+    }
+    public void liftDown(){
+        lift_pos_down(0);
+    }
+    public void rrswitch(boolean s){rrmode = s;}
+    public void pickup_fata(){
+        liftDown();
+        robot_height = Height.LOW;
+//        servo_brat_jos.setPosition(1);
+//        servo_brat_sus.setPosition(0.8);
+    }
+    public void cone_up_high_fata(){
+        lift_pos_up(550);
+        robot_height = Height.HIGH;
+//        servo_brat_jos.setPosition(0.4);
+//        servo_brat_sus.setPosition(0.2);
+    }
+    public void cone_up_mid_fata(){
+        if(robot_height.equals(Height.HIGH)) {
+            lift_pos_down(150);
+            if (lift1.getCurrentPosition() < 170 && lift1.getCurrentPosition() > 130) {
+                robot_height = Height.MEDIUM;
+            }
+        }
+        else
+            lift_pos_up(350);
+
+//        servo_brat_jos.setPosition(0.4);
+//        servo_brat_sus.setPosition(0.2);
+    }
+    public void cone_up_low_fata(){
+        liftDown();
+        robot_height = Height.LOW;
+//        servo_brat_jos.setPosition(0.4);
+//        servo_brat_sus.setPosition(0.2);
+    }
+//    public void cone_up_spate(){
+//        servo_brat_jos.setPosition(0.4);
+//        servo_brat_sus.setPosition(0.6);
+//    }
 }
 
