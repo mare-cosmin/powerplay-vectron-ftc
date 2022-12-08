@@ -5,8 +5,6 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.autonomie.HardwareAutonomie;
-
 @TeleOp(name = "BazaTeleOp", group = "TeleOp")
 public class BazaTeleOp extends OpMode {
     public ElapsedTime runtime = new ElapsedTime();
@@ -45,23 +43,19 @@ public class BazaTeleOp extends OpMode {
                 robot.rrswitch(!robot.rrmode);
             }
         }
-//        if(robot.rrmode) {
+        if(robot.rrmode) {
             if (gamepad2.left_trigger > 0.5) {
                 robot.openGripper();
-                telemetry.addData("Gripper", "Open");
+                telemetry.addData("Gripper", robot.gripper.getPosition());
             } else if (gamepad2.right_trigger > 0.5) {
                 robot.closeGripper();
-                telemetry.addData("Gripper", "Closed");
+                telemetry.addData("Gripper", robot.gripper.getPosition());
             }
-            if(robot.servo_brat_test){
-//                telemetry.addData("position_sus", robot.servo_brat_sus.getPosition());
-//                telemetry.addData("position_jos", robot.servo_brat_jos.getPosition());
-            }
-            telemetry.addData("pos-lift1", robot.lift1.getCurrentPosition());
-            telemetry.addData("pos-lift2", robot.lift2.getCurrentPosition());
-            telemetry.addData("target-lift1", robot.lift1.getTargetPosition());
-            telemetry.addData("target-lift2", robot.lift2.getTargetPosition());
-            telemetry.addData("height", robot.robot_height);
+//            telemetry.addData("pos-lift1", robot.lift_left.getCurrentPosition());
+//            telemetry.addData("pos-lift2", robot.lift_right.getCurrentPosition());
+//            telemetry.addData("target-lift1", robot.lift_left.getTargetPosition());
+//            telemetry.addData("target-lift2", robot.lift_right.getTargetPosition());
+//            telemetry.addData("height", robot.robot_height);
             if (gamepad2.a){
                 robot.pickup_fata();
             }
@@ -74,12 +68,12 @@ public class BazaTeleOp extends OpMode {
             if(gamepad2.b){
                 robot.cone_up_low_fata();
             }
-//        }
-        if (robot.chassis_test) {
+        }
+        if (robot.chassis_test && robot.rrmode) {
 
             double drive = -gamepad1.left_stick_y;
             double strafe = -gamepad1.left_stick_x;
-            double twist = (gamepad1.right_bumper ? 0.5 : gamepad1.left_bumper ? -0.5 : 0);
+            double twist = -gamepad1.right_stick_x;
             double[] speeds = {
                     (drive + strafe + twist),
                     (drive + strafe - twist),
@@ -106,8 +100,8 @@ public class BazaTeleOp extends OpMode {
             // apply the calculated values to the motors.
             robot.leftFront.setPower(speeds[0] * joyScale);
             robot.rightFront.setPower(speeds[1] * joyScale);
-            robot.leftBack.setPower(speeds[2] * joyScale);
-            robot.rightBack.setPower(speeds[3] * joyScale);
+            robot.leftRear.setPower(speeds[2] * joyScale);
+            robot.rightRear.setPower(speeds[3] * joyScale);
         }
     }
 }
