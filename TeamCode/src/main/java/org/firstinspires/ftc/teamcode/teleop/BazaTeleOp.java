@@ -73,7 +73,7 @@ public class BazaTeleOp extends OpMode {
 
             double drive = -gamepad1.left_stick_y;
             double strafe = -gamepad1.left_stick_x;
-            double twist = -gamepad1.right_stick_x;
+            double twist = gamepad1.right_stick_x;
             double[] speeds = {
                     (drive + strafe + twist),
                     (drive + strafe - twist),

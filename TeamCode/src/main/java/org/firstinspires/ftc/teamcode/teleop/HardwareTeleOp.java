@@ -24,6 +24,7 @@ public class HardwareTeleOp {
     public boolean gripper_test = true;
     public boolean servo_brat_test = true;
     public boolean all_in = false;
+    public boolean initialisation = true;
 
     public double angle = 0;
     public double distance = 0;
@@ -79,22 +80,6 @@ public class HardwareTeleOp {
             leftRear.setPower(0);
             rightRear.setPower(0);
         }
-        if(gripper_test || all_in) {
-            //initialize servos
-            gripper = hardwareMap.get(Servo.class, "gripper");
-            gripper.setDirection(Servo.Direction.FORWARD);
-            gripper.setPosition(0.6);
-        }
-        if(servo_brat_test || all_in) {
-            servo_brat_jos = hardwareMap.get(Servo.class, "servo_brat_jos");
-            servo_brat_sus = hardwareMap.get(Servo.class, "servo_brat_sus");
-
-            servo_brat_jos.setDirection(Servo.Direction.FORWARD);
-            servo_brat_sus.setDirection(Servo.Direction.FORWARD);
-            servo_brat_jos.setPosition(1);
-            servo_brat_sus.setPosition(0.7);
-        }
-
         if(lift_test || all_in) {
             lift_left = hardwareMap.get(DcMotor.class, "lift_left");
             lift_left.setDirection(DcMotor.Direction.FORWARD);
@@ -111,6 +96,20 @@ public class HardwareTeleOp {
             lift_left.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             lift_right.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         }
+        if(gripper_test || all_in) {
+            //initialize servos
+            gripper = hardwareMap.get(Servo.class, "gripper");
+            gripper.setDirection(Servo.Direction.FORWARD);
+        }
+        if(servo_brat_test || all_in) {
+            servo_brat_jos = hardwareMap.get(Servo.class, "servo_brat_jos");
+            servo_brat_sus = hardwareMap.get(Servo.class, "servo_brat_sus");
+
+            servo_brat_jos.setDirection(Servo.Direction.FORWARD);
+            servo_brat_sus.setDirection(Servo.Direction.FORWARD);
+            pickup_fata();
+        }
+        initialisation = false;
     }
     public void runToPositionCHASSIS(){
         leftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -146,7 +145,7 @@ public class HardwareTeleOp {
         gripper.setPosition(1);
     }
     public void openGripper(){
-        gripper.setPosition(0.6);
+        gripper.setPosition(0);
     }
     public void lift_pos_down(int pos){
         lift_left.setTargetPosition(pos);
@@ -382,34 +381,38 @@ public class HardwareTeleOp {
     public void rrswitch(boolean s){rrmode = s;}
     public void pickup_fata(){
         liftDown();
+        if(initialisation) {
+            closeGripper();
+        }else {
+            openGripper();
+            servo_brat_jos.setPosition(0.35);
+            servo_brat_sus.setPosition(0.55);
+        }
         robot_height = Height.LOW;
-        servo_brat_jos.setPosition(0.52);
-        servo_brat_sus.setPosition(0.6);
     }
     public void cone_up_high_fata(){
         lift_pos_up(650);
         robot_height = Height.HIGH;
-        servo_brat_jos.setPosition(1);
+        servo_brat_jos.setPosition(0.95);
         servo_brat_sus.setPosition(1);
     }
     public void cone_up_mid_fata(){
         if(robot_height.equals(Height.LOW)){
-            lift_pos_up(500);
+            lift_pos_up(420);
             robot_height = Height.MEDIUM;
         }else if(robot_height.equals(Height.HIGH)){
-            lift_pos_down(500);
+            lift_pos_down(420);
             robot_height = Height.MEDIUM;
         }
-        servo_brat_jos.setPosition(1);
+        servo_brat_jos.setPosition(0.93);
         servo_brat_sus.setPosition(1);
     }
     public void cone_up_low_fata(){
         liftDown();
-        if(!lift_left.isBusy()){
-            robot_height = Height.LOW;
-            servo_brat_jos.setPosition(1);
-            servo_brat_sus.setPosition(1);
-        }
+        robot_height = Height.LOW;
+        servo_brat_jos.setPosition(0.93);
+        servo_brat_sus.setPosition(1);
+
     }
 //    public void cone_up_spate(){
 //        servo_brat_jos.setPosition(0.4);
