@@ -172,7 +172,7 @@ public class HardwareTeleOp {
         lift_left.setTargetPosition(pos);
         lift_right.setTargetPosition(pos);
 
-        if (lift_left.getCurrentPosition() >= pos - 10) {
+        if (lift_left.getCurrentPosition() >= pos - 10 && (robot_height.equals(Height.LOW) || robot_height.equals(Height.MEDIUM))) {
             lift_right.setPower(1);
             lift_left.setPower(1);
             lift_right.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -182,39 +182,86 @@ public class HardwareTeleOp {
             lift_right.setPower(0);
         }
     }
+    public void moveForward(double power,double distance) {
 
-    public void driveToPosition(double power, double distance) {
-        int newTargetLeft = (leftFront.getCurrentPosition() +
-                        rightRear.getCurrentPosition())/2 +
-                        (int) (distance * COUNTS_PER_CM);
-        int newTargetRight = (rightFront.getCurrentPosition() +
-                        leftRear.getCurrentPosition())/2 -
-                        (int) (distance * COUNTS_PER_CM);
+//        stopAndResetEncodersCHASSIS();
 
-        leftFront.setTargetPosition(newTargetLeft);
-        rightFront.setTargetPosition(newTargetRight);
-        leftRear.setTargetPosition(newTargetLeft);
-        rightRear.setTargetPosition(newTargetRight);
+        int target =  (int)(distance * COUNTS_PER_CM);
+
+        rightFront.setTargetPosition(-target);
+        leftFront.setTargetPosition(-target);
+        leftRear.setTargetPosition(-target);
+        rightRear.setTargetPosition(-target);
 
         runToPositionCHASSIS();
+
         setPowerCHASSIS(power);
+
+    }
+    public void moveReverse(double power,double distance) {
+
+//        stopAndResetEncodersCHASSIS();
+
+        int target =  (int)(distance * COUNTS_PER_CM);
+
+        rightFront.setTargetPosition(target);
+        leftFront.setTargetPosition(target);
+        leftRear.setTargetPosition(target);
+        rightRear.setTargetPosition(target);
+
+        runToPositionCHASSIS();
+
+        setPowerCHASSIS(power);
+
+    }
+    public void moveRight(double power,double distance) {
+
+//        stopAndResetEncodersCHASSIS();
+
+        int target = -(int) (distance * COUNTS_PER_CM);
+
+        rightFront.setTargetPosition(-target);
+        leftFront.setTargetPosition(target);
+        leftRear.setTargetPosition(-target);
+        rightRear.setTargetPosition(target);
+
+        runToPositionCHASSIS();
+
+        setPowerCHASSIS(power);
+
     }
 
-    public void strafeToPosition(double power, double distance) {
-        int newTargetFront = (leftFront.getCurrentPosition() +
-                        rightRear.getCurrentPosition())/2 +
-                        (int) (distance * COUNTS_PER_CM);
-        int newTargetRear = (rightFront.getCurrentPosition() +
-                        leftRear.getCurrentPosition())/2 -
-                        (int) (distance * COUNTS_PER_CM);
+    public void rotateRight(double power, double distance){
 
-        leftFront.setTargetPosition(newTargetFront);
-        rightFront.setTargetPosition(newTargetRear);
-        leftRear.setTargetPosition(newTargetRear);
-        rightRear.setTargetPosition(newTargetFront);
+        stopAndResetEncodersCHASSIS();
+
+        int target = (int)(distance * COUNTS_PER_CM);
+
+        rightFront.setTargetPosition(target);
+        leftFront.setTargetPosition(-target);
+        leftRear.setTargetPosition(-target);
+        rightRear.setTargetPosition(target);
 
         runToPositionCHASSIS();
+
+        runtime.reset();
+
         setPowerCHASSIS(power);
+
+        setPowerZeroCHASSIS();
+
+        rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightRear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftRear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        stopAndResetEncodersCHASSIS();
+
     }
 
     public void liftDown(){
@@ -228,7 +275,7 @@ public class HardwareTeleOp {
         }else {
             openGripper();
             servo_brat_jos.setPosition(0);
-            servo_brat_sus.setPosition(0.58);
+            servo_brat_sus.setPosition(0.4777);
         }
         robot_height = Height.LOW;
     }
@@ -252,7 +299,7 @@ public class HardwareTeleOp {
             robot_height = Height.MEDIUM;
         }
         servo_brat_jos.setPosition(0.75);
-        servo_brat_sus.setPosition(1);
+        servo_brat_sus.setPosition(0.96);
     }
     public void cone_up_high_spate(){
         lift_pos_up(605);
@@ -264,7 +311,7 @@ public class HardwareTeleOp {
         liftDown();
         robot_height = Height.LOW;
         servo_brat_jos.setPosition(0.75);
-        servo_brat_sus.setPosition(1);
+        servo_brat_sus.setPosition(0.94);
 }
 //    public void cone_up_spate(){
 //        servo_brat_jos.setPosition(0.4);

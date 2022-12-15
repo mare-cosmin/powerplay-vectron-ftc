@@ -71,13 +71,13 @@ public class BazaTeleOp extends OpMode {
         }
         if (robot.chassis_test && robot.rrmode) {
 
-            double drive = -gamepad1.left_stick_y;
-            double strafe = -gamepad1.left_stick_x;
+            double drive = gamepad1.left_stick_y;
+            double strafe = gamepad1.left_stick_x;
             double twist = gamepad1.right_stick_x;
             double[] speeds = {
-                    (drive + strafe + twist),
-                    (drive + strafe - twist),
                     (drive - strafe + twist),
+                    (drive + strafe - twist),
+                    (drive + strafe + twist),
                     (drive - strafe - twist)
             };
             // Because we are adding vectors and motors only take values between

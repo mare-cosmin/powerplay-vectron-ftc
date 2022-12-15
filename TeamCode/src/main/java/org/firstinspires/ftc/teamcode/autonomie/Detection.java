@@ -23,6 +23,7 @@ package org.firstinspires.ftc.teamcode.autonomie;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.teleop.HardwareTeleOp;
@@ -60,7 +61,7 @@ public class Detection extends OpMode {
     int final_tag = 0;
 
     AprilTagDetection tagOfInterest = null;
-    public void initCV() {
+    public void initCV(HardwareMap hardwareMap) {
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
         aprilTagDetectionPipeline = new AprilTagDetectionPipeline(tagsize, fx, fy, cx, cy);
@@ -77,6 +78,7 @@ public class Detection extends OpMode {
 
             }
         });
+        telemetry.addData("done init", "yee");
     }
     public int detect() {
         ArrayList<AprilTagDetection> currentDetections = aprilTagDetectionPipeline.getLatestDetections();
@@ -84,10 +86,16 @@ public class Detection extends OpMode {
         if (currentDetections.size() != 0) {
 
             for (AprilTagDetection tag : currentDetections) {
+                telemetry.addData("tag", tag.id);
+                telemetry.addData("tag", tag.pose);
                 if (tag.id == LEFT || tag.id == RIGHT || tag.id == CENTER) {
                     tagOfInterest = tag;
                     final_tag += (final_tag != 0 ? 0 : tag.id);
-                    return final_tag;
+                    telemetry.addData("tag", tag.id);
+                    telemetry.addData("tag", tag.pose);
+                    if(final_tag != 0){
+                        return final_tag;
+                    }
                 }
             }
         }
