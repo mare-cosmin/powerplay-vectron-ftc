@@ -152,12 +152,13 @@ public class HardwareTeleOp {
         gripper.setPosition(0);
     }
     public void lift_pos_down(int pos){
+        pos = -pos;
         lift_left.setTargetPosition(pos);
-//        lift_right.setTargetPosition(pos);
+        lift_right.setTargetPosition(pos);
 
-        if(lift_left.getCurrentPosition()>=pos+10){
+        if(lift_left.getCurrentPosition() <= pos+10){
             lift_left.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-//            lift_right.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            lift_right.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             lift_left.setPower(0.5);
             lift_right.setPower(0.5);
         }
@@ -166,16 +167,17 @@ public class HardwareTeleOp {
             lift_right.setPower(0);
         }
     }
-    public void lift_pos_up(int pos){
+    public void lift_pos_up(int pos) {
+        pos = -pos;
         lift_left.setTargetPosition(pos);
-//        lift_right.setTargetPosition(pos);
-        if(lift_left.getCurrentPosition() <= pos-10){
-            lift_left.setPower(1);
-            lift_right.setPower(1);
-            lift_left.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-//            lift_right.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        lift_right.setTargetPosition(pos);
 
-        }else{
+        if (lift_left.getCurrentPosition() >= pos - 10) {
+            lift_right.setPower(1);
+            lift_left.setPower(1);
+            lift_right.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            lift_left.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        } else {
             lift_left.setPower(0);
             lift_right.setPower(0);
         }
@@ -225,35 +227,45 @@ public class HardwareTeleOp {
             closeGripper();
         }else {
             openGripper();
-            servo_brat_jos.setPosition(0.35);
-            servo_brat_sus.setPosition(0.55);
+            servo_brat_jos.setPosition(0);
+            servo_brat_sus.setPosition(0.58);
         }
         robot_height = Height.LOW;
     }
     public void cone_up_high_fata(){
-        lift_pos_up(650);
-        robot_height = Height.HIGH;
-        servo_brat_jos.setPosition(0.95);
+        if(robot_height.equals(Height.MEDIUM)){
+            lift_pos_up(650);
+            robot_height = Height.HIGH;
+        }else if(robot_height.equals(Height.LOW)){
+            lift_pos_up(605);
+            robot_height = Height.HIGH;
+        }
+        servo_brat_jos.setPosition(0.75);
         servo_brat_sus.setPosition(1);
     }
     public void cone_up_mid_fata(){
         if(robot_height.equals(Height.LOW)){
-            lift_pos_up(420);
+            lift_pos_up(434);
             robot_height = Height.MEDIUM;
         }else if(robot_height.equals(Height.HIGH)){
-            lift_pos_down(420);
+            lift_pos_down(300);
             robot_height = Height.MEDIUM;
         }
-        servo_brat_jos.setPosition(0.93);
+        servo_brat_jos.setPosition(0.75);
         servo_brat_sus.setPosition(1);
     }
+    public void cone_up_high_spate(){
+        lift_pos_up(605);
+        servo_brat_jos.setPosition(1);
+        servo_brat_sus.setPosition(1);
+    }
+
     public void cone_up_low_fata(){
         liftDown();
         robot_height = Height.LOW;
-        servo_brat_jos.setPosition(0.93);
+        servo_brat_jos.setPosition(0.75);
         servo_brat_sus.setPosition(1);
-
-    }
+}
 //    public void cone_up_spate(){
 //        servo_brat_jos.setPosition(0.4);
 //        servo_brat_sus.setPosition(0.6);
