@@ -89,8 +89,8 @@ public class HardwareTeleOp {
 
             lift_right = hardwareMap.get(DcMotor.class, "lift_right");
             lift_right.setDirection(DcMotor.Direction.FORWARD);
-            lift_right.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-//            lift_right.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            lift_right.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            lift_right.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             lift_right.setPower(0);
 
             lift_left.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -156,7 +156,7 @@ public class HardwareTeleOp {
         lift_left.setTargetPosition(pos);
         lift_right.setTargetPosition(pos);
 
-        if(lift_left.getCurrentPosition() <= pos+10){
+        if(lift_left.getCurrentPosition() <= pos-10){
             lift_left.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             lift_right.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             lift_left.setPower(0.5);
@@ -172,7 +172,7 @@ public class HardwareTeleOp {
         lift_left.setTargetPosition(pos);
         lift_right.setTargetPosition(pos);
 
-        if (lift_left.getCurrentPosition() >= pos - 10 && (robot_height.equals(Height.LOW) || robot_height.equals(Height.MEDIUM))) {
+        if (lift_left.getCurrentPosition() >= pos + 10 && (robot_height.equals(Height.LOW) || robot_height.equals(Height.MEDIUM))) {
             lift_right.setPower(1);
             lift_left.setPower(1);
             lift_right.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -269,10 +269,10 @@ public class HardwareTeleOp {
     }
     public void rrswitch(boolean s){rrmode = s;}
     public void pickup_fata(){
-        liftDown();
         if(initialisation) {
             closeGripper();
         }else {
+            liftDown();
             openGripper();
             servo_brat_jos.setPosition(0);
             servo_brat_sus.setPosition(0.4777);
@@ -281,25 +281,21 @@ public class HardwareTeleOp {
     }
     public void cone_up_high_fata(){
         if(robot_height.equals(Height.MEDIUM)){
-            lift_pos_up(650);
+            lift_pos_up(700);
             robot_height = Height.HIGH;
         }else if(robot_height.equals(Height.LOW)){
-            lift_pos_up(605);
+            lift_pos_up(700);
             robot_height = Height.HIGH;
         }
-        servo_brat_jos.setPosition(0.75);
-        servo_brat_sus.setPosition(1);
+        servo_brat_jos.setPosition(0.48);
+        servo_brat_sus.setPosition(0.62);
     }
     public void cone_up_mid_fata(){
-        if(robot_height.equals(Height.LOW)){
-            lift_pos_up(434);
-            robot_height = Height.MEDIUM;
-        }else if(robot_height.equals(Height.HIGH)){
-            lift_pos_down(300);
-            robot_height = Height.MEDIUM;
-        }
-        servo_brat_jos.setPosition(0.75);
-        servo_brat_sus.setPosition(0.96);
+        if(robot_height.equals(Height.LOW))
+            lift_pos_up(390);
+        robot_height = Height.MEDIUM;
+        servo_brat_jos.setPosition(0.695);
+        servo_brat_sus.setPosition(0.97);
     }
     public void cone_up_high_spate(){
         lift_pos_up(605);
@@ -310,8 +306,8 @@ public class HardwareTeleOp {
     public void cone_up_low_fata(){
         liftDown();
         robot_height = Height.LOW;
-        servo_brat_jos.setPosition(0.75);
-        servo_brat_sus.setPosition(0.94);
+        servo_brat_jos.setPosition(0.69);
+        servo_brat_sus.setPosition(1);
 }
 //    public void cone_up_spate(){
 //        servo_brat_jos.setPosition(0.4);

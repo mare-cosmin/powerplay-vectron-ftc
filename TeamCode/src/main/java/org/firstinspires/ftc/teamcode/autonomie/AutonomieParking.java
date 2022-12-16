@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.teleop.HardwareTeleOp;
 
-@Autonomous(name="testAuto", group="Autonomie")
+@Autonomous(name="testAutoParking", group="Autonomie")
 public class AutonomieParking extends LinearOpMode {
     HardwareTeleOp robot;
         Detection detectare = new Detection();
@@ -16,7 +16,7 @@ public class AutonomieParking extends LinearOpMode {
     public void init(HardwareMap hardwareMap) {
         robot = new HardwareTeleOp();
         robot.initialize(hardwareMap);
-        robot.cone_up_low_fata();
+//        robot.cone_up_low_fata();
         sleep(100);
         detectare.initCV(hardwareMap);
         while (tag == 0){

@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.teleop.HardwareTeleOp;
 
-@Autonomous(name="testAuto", group="Autonomie")
+@Autonomous(name="testAutoRLow", group="Autonomie")
 public class AutonomieRLow extends LinearOpMode {
     HardwareTeleOp robot;
         Detection detectare = new Detection();
