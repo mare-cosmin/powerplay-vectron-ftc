@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 @TeleOp(name = "BazaTeleOp", group = "TeleOp")
 public class BazaTeleOp extends OpMode {
     public ElapsedTime runtime = new ElapsedTime();
-    public HardwareTeleOp robot = new HardwareTeleOp();
+    public TeleOpAdaptedMecanumDrive robot = new TeleOpAdaptedMecanumDrive(hardwareMap);
 
     double x;
     double t = 0;
@@ -75,10 +75,10 @@ public class BazaTeleOp extends OpMode {
             double strafe = gamepad1.left_stick_x;
             double twist = gamepad1.right_stick_x;
             double[] speeds = {
-                    (drive - strafe + twist),
                     (drive + strafe - twist),
-                    (drive + strafe + twist),
-                    (drive - strafe - twist)
+                    (drive - strafe + twist),
+                    (drive - strafe - twist),
+                    (drive + strafe + twist)
             };
             // Because we are adding vectors and motors only take values between
             // [-1,1] we may need to normalize them.

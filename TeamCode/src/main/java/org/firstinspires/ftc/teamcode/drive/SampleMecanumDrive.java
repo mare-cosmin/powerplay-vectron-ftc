@@ -21,6 +21,7 @@ import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
@@ -42,6 +43,7 @@ import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_VEL;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MOTOR_VELO_PID;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.RUN_USING_ENCODER;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.TRACK_WIDTH;
+import static org.firstinspires.ftc.teamcode.drive.DriveConstants.WHEEL_BASE;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.encoderTicksToInches;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kA;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kStatic;
@@ -55,7 +57,7 @@ public class SampleMecanumDrive extends MecanumDrive {
     public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(0, 0, 0);
     public static PIDCoefficients HEADING_PID = new PIDCoefficients(0, 0, 0);
 
-    public static double LATERAL_MULTIPLIER = 1;
+    public static double LATERAL_MULTIPLIER = 0.8;
 
     public static double VX_WEIGHT = 1;
     public static double VY_WEIGHT = 1;
@@ -75,7 +77,7 @@ public class SampleMecanumDrive extends MecanumDrive {
     private VoltageSensor batteryVoltageSensor;
 
     public SampleMecanumDrive(HardwareMap hardwareMap) {
-        super(kV, kA, kStatic, TRACK_WIDTH, TRACK_WIDTH, LATERAL_MULTIPLIER);
+        super(kV, kA, kStatic, TRACK_WIDTH, WHEEL_BASE, LATERAL_MULTIPLIER);
 
         follower = new HolonomicPIDVAFollower(TRANSLATIONAL_PID, TRANSLATIONAL_PID, HEADING_PID,
                 new Pose2d(0.5, 0.5, Math.toRadians(5.0)), 0.5);
@@ -120,7 +122,10 @@ public class SampleMecanumDrive extends MecanumDrive {
         leftRear = hardwareMap.get(DcMotorEx.class, "leftRear");
         rightRear = hardwareMap.get(DcMotorEx.class, "rightRear");
         rightFront = hardwareMap.get(DcMotorEx.class, "rightFront");
-
+//        rightFront.setDirection(DcMotor.Direction.REVERSE);
+//        rightRear.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftRear.setDirection(DcMotor.Direction.REVERSE);
+        leftFront.setDirection(DcMotor.Direction.REVERSE);
         motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront);
 
         for (DcMotorEx motor : motors) {
@@ -287,10 +292,11 @@ public class SampleMecanumDrive extends MecanumDrive {
 
     @Override
     public void setMotorPowers(double v, double v1, double v2, double v3) {
-        leftFront.setPower(v);
-        leftRear.setPower(v1);
-        rightRear.setPower(v2);
-        rightFront.setPower(v3);
+        double multiplier = 12 / batteryVoltageSensor.getVoltage();
+        leftFront.setPower(v * multiplier);
+        leftRear.setPower(v1 * multiplier);
+        rightRear.setPower(v2 * multiplier);
+        rightFront.setPower(v3 * multiplier);
     }
 
     @Override
