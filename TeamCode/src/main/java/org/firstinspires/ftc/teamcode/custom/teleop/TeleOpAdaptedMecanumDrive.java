@@ -1,11 +1,10 @@
-package org.firstinspires.ftc.teamcode.teleop;
+package org.firstinspires.ftc.teamcode.custom.teleop;
 
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ACCEL;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ANG_VEL;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_VEL;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.RUN_USING_ENCODER;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.TRACK_WIDTH;
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.WHEEL_BASE;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.encoderTicksToInches;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kA;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kStatic;
@@ -63,31 +62,33 @@ public class TeleOpAdaptedMecanumDrive extends MecanumDrive {
         LOW
     }
 
-    public HardwareTeleOp.Height robot_height = HardwareTeleOp.Height.LOW;
+    public Height robot_height = Height.LOW;
 
     //define servos
     public Servo gripper = null;
     public Servo servo_brat_sus = null;
     public Servo servo_brat_jos = null;
-    public DcMotor lift_left = null;
-    public DcMotor lift_right = null;
+    public Servo servo_rotation = null;
+    public DcMotor lift_exp = null;
+    public DcMotor lift_ctrl = null;
 
     public boolean rrmode = true;
 
     public boolean chassis_test = true;
-    public boolean lift_test = true;
-    public boolean gripper_test = true;
-    public boolean servo_brat_test = true;
+    public boolean lift_test = false;
+    public boolean gripper_test = false;
+    public boolean servo_brat_test = false;
     public boolean all_in = false;
     public boolean initialisation = true;
+    public boolean backwards = false;
 
-    public double angle = 0;
-    public double distance = 0;
+    private final double servo_rot_up = 0.2;
+    private final double servo_rot_down = 0.8;
 
     double COUNTS_PER_CM = 537.7 / (9.6 * 3.1415);
 
     public TeleOpAdaptedMecanumDrive(HardwareMap hardwareMap) {
-        super(kV, kA, kStatic, TRACK_WIDTH, WHEEL_BASE, LATERAL_MULTIPLIER);
+        super(kV, kA, kStatic, TRACK_WIDTH, TRACK_WIDTH, LATERAL_MULTIPLIER);
     }
 
     public void initialize(HardwareMap hardwareMap){
@@ -96,10 +97,10 @@ public class TeleOpAdaptedMecanumDrive extends MecanumDrive {
             leftRear = hardwareMap.get(DcMotorEx.class, "leftRear");
             rightRear = hardwareMap.get(DcMotorEx.class, "rightRear");
             rightFront = hardwareMap.get(DcMotorEx.class, "rightFront");
-            //        rightFront.setDirection(DcMotor.Direction.REVERSE);
-            //        rightRear.setDirection(DcMotorSimple.Direction.REVERSE);
+
             leftRear.setDirection(DcMotor.Direction.REVERSE);
             leftFront.setDirection(DcMotor.Direction.REVERSE);
+
             motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront);
 
             for (DcMotorEx motor : motors) {
@@ -115,20 +116,20 @@ public class TeleOpAdaptedMecanumDrive extends MecanumDrive {
             setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         }
         if(lift_test || all_in) {
-            lift_left = hardwareMap.get(DcMotor.class, "lift_left");
-            lift_left.setDirection(DcMotor.Direction.FORWARD);
-            lift_left.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            lift_left.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            lift_left.setPower(0);
+            lift_exp = hardwareMap.get(DcMotor.class, "lift_exp");
+            lift_exp.setDirection(DcMotor.Direction.FORWARD);
+            lift_exp.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            lift_exp.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            lift_exp.setPower(0);
 
-            lift_right = hardwareMap.get(DcMotor.class, "lift_right");
-            lift_right.setDirection(DcMotor.Direction.FORWARD);
-            lift_right.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            lift_right.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            lift_right.setPower(0);
+            lift_ctrl = hardwareMap.get(DcMotor.class, "lift_ctrl");
+            lift_ctrl.setDirection(DcMotor.Direction.FORWARD);
+            lift_ctrl.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            lift_ctrl.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            lift_ctrl.setPower(0);
 
-            lift_left.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            lift_right.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            lift_exp.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            lift_ctrl.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         }
         if(gripper_test || all_in) {
             //initialize servos
@@ -138,12 +139,35 @@ public class TeleOpAdaptedMecanumDrive extends MecanumDrive {
         if(servo_brat_test || all_in) {
             servo_brat_jos = hardwareMap.get(Servo.class, "servo_brat_jos");
             servo_brat_sus = hardwareMap.get(Servo.class, "servo_brat_sus");
+            servo_rotation = hardwareMap.get(Servo.class, "servo_rotation");
 
+            servo_rotation.setDirection(Servo.Direction.FORWARD);
             servo_brat_jos.setDirection(Servo.Direction.FORWARD);
             servo_brat_sus.setDirection(Servo.Direction.FORWARD);
 //            pickup_fata();
         }
         initialisation = false;
+    }
+
+
+    public void setWeightedDrivePower(Pose2d drivePower) {
+        Pose2d vel = drivePower;
+
+        if (Math.abs(drivePower.getX()) + Math.abs(drivePower.getY())
+                + Math.abs(drivePower.getHeading()) > 1) {
+            // re-normalize the powers according to the weights
+            double denom = VX_WEIGHT * Math.abs(drivePower.getX())
+                    + VY_WEIGHT * Math.abs(drivePower.getY())
+                    + OMEGA_WEIGHT * Math.abs(drivePower.getHeading());
+
+            vel = new Pose2d(
+                    VX_WEIGHT * drivePower.getX(),
+                    VY_WEIGHT * drivePower.getY(),
+                    OMEGA_WEIGHT * drivePower.getHeading()
+            ).div(denom);
+        }
+
+        setDrivePower(vel);
     }
 
     public void update() {
@@ -241,40 +265,38 @@ public class TeleOpAdaptedMecanumDrive extends MecanumDrive {
     //functii pentru celelalte motoare
 
     public void closeGripper(){
-        gripper.setPosition(1);
+        gripper.setPosition(0.4);
     }
     public void openGripper(){
-        gripper.setPosition(0);
+        gripper.setPosition(0.2);
     }
     public void lift_pos_down(int pos){
-        pos = -pos;
-        lift_left.setTargetPosition(pos);
-        lift_right.setTargetPosition(pos);
+        lift_exp.setTargetPosition(-pos);
+        lift_ctrl.setTargetPosition(pos);
 
-        if(lift_left.getCurrentPosition() <= pos-10){
-            lift_left.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            lift_right.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            lift_left.setPower(0.5);
-            lift_right.setPower(0.5);
+        if(lift_exp.getCurrentPosition() <= pos+80){
+            lift_exp.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            lift_ctrl.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            lift_exp.setPower(0.5);
+            lift_ctrl.setPower(0.5);
         }
         else{
-            lift_left.setPower(0);
-            lift_right.setPower(0);
+            lift_exp.setPower(0);
+            lift_ctrl.setPower(0);
         }
     }
     public void lift_pos_up(int pos) {
-        pos = -pos;
-        lift_left.setTargetPosition(pos);
-        lift_right.setTargetPosition(pos);
+        lift_exp.setTargetPosition(-pos);
+        lift_ctrl.setTargetPosition(pos);
 
-        if (lift_left.getCurrentPosition() >= pos + 10 && (robot_height.equals(HardwareTeleOp.Height.LOW) || robot_height.equals(HardwareTeleOp.Height.MEDIUM))) {
-            lift_right.setPower(1);
-            lift_left.setPower(1);
-            lift_right.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            lift_left.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        if (lift_exp.getCurrentPosition() <= pos + 10 && (robot_height.equals(Height.LOW) || robot_height.equals(Height.MEDIUM))) {
+            lift_ctrl.setPower(1);
+            lift_exp.setPower(1);
+            lift_ctrl.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            lift_exp.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         } else {
-            lift_left.setPower(0);
-            lift_right.setPower(0);
+            lift_exp.setPower(0);
+            lift_ctrl.setPower(0);
         }
     }
     public void moveForward(double power,double distance) {
@@ -326,80 +348,109 @@ public class TeleOpAdaptedMecanumDrive extends MecanumDrive {
 
     }
 
-    public void rotateRight(double power, double distance){
-
-        stopAndResetEncodersCHASSIS();
-
-        int target = (int)(distance * COUNTS_PER_CM);
-
-        rightFront.setTargetPosition(target);
-        leftFront.setTargetPosition(-target);
-        leftRear.setTargetPosition(-target);
-        rightRear.setTargetPosition(target);
-
-        runToPositionCHASSIS();
-        setPowerCHASSIS(power);
-
-        setPowerZeroCHASSIS();
-
-        rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rightRear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        leftRear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-        leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        leftRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        stopAndResetEncodersCHASSIS();
-
-    }
-
     public void liftDown(){
         lift_pos_down(0);
     }
+
     public void rrswitch(boolean s){rrmode = s;}
+
+    public void auto_position(){
+        servo_brat_jos.setPosition(0);
+        servo_brat_sus.setPosition(0.45);
+        robot_height = Height.LOW;
+    }
+
     public void pickup_fata(){
-        if(initialisation) {
-            closeGripper();
-        }else {
-            liftDown();
-            openGripper();
-            servo_brat_jos.setPosition(0);
-            servo_brat_sus.setPosition(0.4777);
-        }
-        robot_height = HardwareTeleOp.Height.LOW;
+        liftDown();
+        openGripper();
+        servo_rotation.setPosition(servo_rot_down);
+
+        servo_brat_jos.setPosition(0);
+        servo_brat_sus.setPosition(0.4777);
+        robot_height = Height.LOW;
     }
-    public void cone_up_high_fata(){
-        if(robot_height.equals(HardwareTeleOp.Height.MEDIUM)){
-            lift_pos_up(700);
-            robot_height = HardwareTeleOp.Height.HIGH;
-        }else if(robot_height.equals(HardwareTeleOp.Height.LOW)){
-            lift_pos_up(700);
-            robot_height = HardwareTeleOp.Height.HIGH;
-        }
-        servo_brat_jos.setPosition(0.48);
-        servo_brat_sus.setPosition(0.62);
-    }
-    public void cone_up_mid_fata(){
-        if(robot_height.equals(HardwareTeleOp.Height.LOW))
-            lift_pos_up(390);
-        robot_height = HardwareTeleOp.Height.MEDIUM;
-        servo_brat_jos.setPosition(0.695);
-        servo_brat_sus.setPosition(0.97);
-    }
-    public void cone_up_high_spate(){
-        lift_pos_up(605);
-        servo_brat_jos.setPosition(1);
+
+    public void cone_down_low_fata(){
+        liftDown();
+        robot_height = Height.LOW;
+        servo_rotation.setPosition(servo_rot_down);
+        servo_brat_jos.setPosition(0.69);
         servo_brat_sus.setPosition(1);
     }
 
     public void cone_up_low_fata(){
         liftDown();
-        robot_height = HardwareTeleOp.Height.LOW;
+        robot_height = Height.LOW;
+
+        servo_rotation.setPosition(servo_rot_down);
         servo_brat_jos.setPosition(0.69);
         servo_brat_sus.setPosition(1);
+    }
+
+    public void cone_up_mid_fata(){
+        if(robot_height.equals(Height.LOW))
+            lift_pos_up(350);
+        robot_height = Height.MEDIUM;
+        servo_rotation.setPosition(servo_rot_down);
+        servo_brat_jos.setPosition(0.695);
+        servo_brat_sus.setPosition(0.97);
+    }
+
+    public void cone_up_high_fata(){
+        if(robot_height.equals(Height.MEDIUM)){
+            lift_pos_up(700);
+            robot_height = Height.HIGH;
+        }else if(robot_height.equals(Height.LOW)){
+            lift_pos_up(700);
+            robot_height = Height.HIGH;
+        }
+        servo_rotation.setPosition(servo_rot_down);
+        servo_brat_jos.setPosition(0.48);
+        servo_brat_sus.setPosition(0.62);
+    }
+
+    public void cone_up_low_spate(){
+        liftDown();
+        robot_height = Height.LOW;
+        servo_rotation.setPosition(servo_rot_up);
+        servo_brat_jos.setPosition(0.9);
+        servo_brat_sus.setPosition(0.74);
+    }
+
+    public void cone_up_mid_spate(){
+        if(robot_height.equals(Height.LOW))
+            lift_pos_up(350);
+        robot_height = Height.MEDIUM;
+        servo_rotation.setPosition(servo_rot_up);
+        servo_brat_jos.setPosition(0.69);
+        servo_brat_sus.setPosition(0.42);
+    }
+
+    public void cone_up_high_spate(){
+        if(robot_height.equals(Height.MEDIUM)){
+            lift_pos_up(700);
+            robot_height = Height.HIGH;
+        }else if(robot_height.equals(Height.LOW)){
+            lift_pos_up(700);
+            robot_height = Height.HIGH;
+        }
+        servo_rotation.setPosition(servo_rot_up);
+        servo_brat_jos.setPosition(0.69);
+        servo_brat_sus.setPosition(0);
+    }
+
+
+    public void pickup_stack(int pos){
+        switch(pos){
+            case 1:
+                break;
+            case 2:
+                break;
+            case 3:
+                break;
+            case 4:
+                break;
+        }
     }
 //    public void cone_up_spate(){
 //        servo_brat_jos.setPosition(0.4);

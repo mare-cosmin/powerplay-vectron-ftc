@@ -19,14 +19,13 @@
  * SOFTWARE.
  */
 
-package org.firstinspires.ftc.teamcode.autonomie;
+package org.firstinspires.ftc.teamcode.custom.autonomie;
 
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.teamcode.teleop.HardwareTeleOp;
+import org.firstinspires.ftc.teamcode.custom.teleop.TeleOpAdaptedMecanumDrive;
 import org.openftc.apriltag.AprilTagDetection;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
@@ -37,7 +36,7 @@ import java.util.ArrayList;
 public class Detection extends OpMode {
     OpenCvCamera camera;
     AprilTagDetectionPipeline aprilTagDetectionPipeline;
-    public HardwareTeleOp robot = new HardwareTeleOp();
+    public TeleOpAdaptedMecanumDrive robot = new TeleOpAdaptedMecanumDrive(hardwareMap);
 
     static final double FEET_PER_METER = 3.28084;
 
@@ -84,19 +83,10 @@ public class Detection extends OpMode {
         ArrayList<AprilTagDetection> currentDetections = aprilTagDetectionPipeline.getLatestDetections();
 
         if (currentDetections.size() != 0) {
-
-            for (AprilTagDetection tag : currentDetections) {
+            AprilTagDetection tag = currentDetections.get(0);
+            if (tag.id == LEFT || tag.id == RIGHT || tag.id == CENTER) {
                 telemetry.addData("tag", tag.id);
-                telemetry.addData("tag", tag.pose);
-                if (tag.id == LEFT || tag.id == RIGHT || tag.id == CENTER) {
-                    tagOfInterest = tag;
-                    final_tag += (final_tag != 0 ? 0 : tag.id);
-                    telemetry.addData("tag", tag.id);
-                    telemetry.addData("tag", tag.pose);
-                    if(final_tag != 0){
-                        return final_tag;
-                    }
-                }
+                return tag.id;
             }
         }
         return 0;
