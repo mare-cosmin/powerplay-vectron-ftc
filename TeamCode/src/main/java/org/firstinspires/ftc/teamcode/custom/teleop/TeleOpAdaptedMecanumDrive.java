@@ -75,15 +75,15 @@ public class TeleOpAdaptedMecanumDrive extends MecanumDrive {
     public boolean rrmode = true;
 
     public boolean chassis_test = true;
-    public boolean lift_test = false;
-    public boolean gripper_test = false;
-    public boolean servo_brat_test = false;
+    public boolean lift_test = true;
+    public boolean gripper_test = true;
+    public boolean servo_brat_test = true;
     public boolean all_in = false;
     public boolean initialisation = true;
     public boolean backwards = false;
 
     private final double servo_rot_up = 0.2;
-    private final double servo_rot_down = 0.8;
+    private final double servo_rot_down = 0.85;
 
     double COUNTS_PER_CM = 537.7 / (9.6 * 3.1415);
 
@@ -265,7 +265,7 @@ public class TeleOpAdaptedMecanumDrive extends MecanumDrive {
     //functii pentru celelalte motoare
 
     public void closeGripper(){
-        gripper.setPosition(0.4);
+        gripper.setPosition(0.5);
     }
     public void openGripper(){
         gripper.setPosition(0.2);
@@ -305,10 +305,10 @@ public class TeleOpAdaptedMecanumDrive extends MecanumDrive {
 
         int target =  (int)(distance * COUNTS_PER_CM);
 
-        rightFront.setTargetPosition(-target);
-        leftFront.setTargetPosition(-target);
-        leftRear.setTargetPosition(-target);
-        rightRear.setTargetPosition(-target);
+        rightFront.setTargetPosition(target);
+        leftFront.setTargetPosition(target);
+        leftRear.setTargetPosition(target);
+        rightRear.setTargetPosition(target);
 
         runToPositionCHASSIS();
 
@@ -321,10 +321,10 @@ public class TeleOpAdaptedMecanumDrive extends MecanumDrive {
 
         int target =  (int)(distance * COUNTS_PER_CM);
 
-        rightFront.setTargetPosition(target);
-        leftFront.setTargetPosition(target);
-        leftRear.setTargetPosition(target);
-        rightRear.setTargetPosition(target);
+        rightFront.setTargetPosition(-target);
+        leftFront.setTargetPosition(-target);
+        leftRear.setTargetPosition(-target);
+        rightRear.setTargetPosition(-target);
 
         runToPositionCHASSIS();
 
@@ -333,14 +333,14 @@ public class TeleOpAdaptedMecanumDrive extends MecanumDrive {
     }
     public void moveRight(double power,double distance) {
 
-//        stopAndResetEncodersCHASSIS();
+        stopAndResetEncodersCHASSIS();
 
         int target = -(int) (distance * COUNTS_PER_CM);
 
-        rightFront.setTargetPosition(-target);
-        leftFront.setTargetPosition(target);
-        leftRear.setTargetPosition(-target);
-        rightRear.setTargetPosition(target);
+        rightFront.setTargetPosition(target);
+        leftFront.setTargetPosition(-target);
+        leftRear.setTargetPosition(target);
+        rightRear.setTargetPosition(-target);
 
         runToPositionCHASSIS();
 
@@ -355,18 +355,18 @@ public class TeleOpAdaptedMecanumDrive extends MecanumDrive {
     public void rrswitch(boolean s){rrmode = s;}
 
     public void auto_position(){
-        servo_brat_jos.setPosition(0);
+        servo_brat_jos.setPosition(0.08);
         servo_brat_sus.setPosition(0.45);
         robot_height = Height.LOW;
     }
 
-    public void pickup_fata(){
+    public void pickup_fata() {
         liftDown();
         openGripper();
         servo_rotation.setPosition(servo_rot_down);
 
-        servo_brat_jos.setPosition(0);
-        servo_brat_sus.setPosition(0.4777);
+        servo_brat_sus.setPosition(0.54);
+        servo_brat_jos.setPosition(0.04);
         robot_height = Height.LOW;
     }
 
@@ -374,8 +374,9 @@ public class TeleOpAdaptedMecanumDrive extends MecanumDrive {
         liftDown();
         robot_height = Height.LOW;
         servo_rotation.setPosition(servo_rot_down);
-        servo_brat_jos.setPosition(0.69);
-        servo_brat_sus.setPosition(1);
+        servo_brat_sus.setPosition(0.48);
+        servo_brat_jos.setPosition(0.04);
+
     }
 
     public void cone_up_low_fata(){
@@ -383,47 +384,57 @@ public class TeleOpAdaptedMecanumDrive extends MecanumDrive {
         robot_height = Height.LOW;
 
         servo_rotation.setPosition(servo_rot_down);
-        servo_brat_jos.setPosition(0.69);
+        servo_brat_jos.setPosition(0.62);
         servo_brat_sus.setPosition(1);
-    }
+    } //jos mai jos
 
     public void cone_up_mid_fata(){
-        if(robot_height.equals(Height.LOW))
+        if(robot_height.equals(Height.LOW)) {
             lift_pos_up(350);
-        robot_height = Height.MEDIUM;
+            robot_height = Height.MEDIUM;
+        }
         servo_rotation.setPosition(servo_rot_down);
-        servo_brat_jos.setPosition(0.695);
+        servo_brat_jos.setPosition(0.666);
         servo_brat_sus.setPosition(0.97);
-    }
+    } //jos mai jos
 
     public void cone_up_high_fata(){
         if(robot_height.equals(Height.MEDIUM)){
-            lift_pos_up(700);
+            lift_pos_up(650);
             robot_height = Height.HIGH;
         }else if(robot_height.equals(Height.LOW)){
-            lift_pos_up(700);
+            lift_pos_up(650);
             robot_height = Height.HIGH;
         }
         servo_rotation.setPosition(servo_rot_down);
-        servo_brat_jos.setPosition(0.48);
-        servo_brat_sus.setPosition(0.62);
+        servo_brat_jos.setPosition(0.33);
+        servo_brat_sus.setPosition(0.57);
     }
 
     public void cone_up_low_spate(){
         liftDown();
-        robot_height = Height.LOW;
         servo_rotation.setPosition(servo_rot_up);
+        if(robot_height.equals(Height.LOW))
+            lift_pos_up(300);
         servo_brat_jos.setPosition(0.9);
         servo_brat_sus.setPosition(0.74);
+        robot_height = Height.LOW;
+    }
+    public void cone_up_mid_spate(){
+        if(robot_height.equals(Height.LOW)) {
+            lift_pos_up(550);
+            robot_height = Height.MEDIUM;
+        }
+        servo_rotation.setPosition(servo_rot_up);
+        servo_brat_jos.setPosition(0.9);
+        servo_brat_sus.setPosition(0.63);
     }
 
-    public void cone_up_mid_spate(){
-        if(robot_height.equals(Height.LOW))
-            lift_pos_up(350);
-        robot_height = Height.MEDIUM;
-        servo_rotation.setPosition(servo_rot_up);
-        servo_brat_jos.setPosition(0.69);
-        servo_brat_sus.setPosition(0.42);
+    public void lift_up(){
+        lift_pos_up(lift_ctrl.getCurrentPosition()+40);
+    }
+    public void lift_down(){
+        lift_pos_down(lift_ctrl.getCurrentPosition()-40);
     }
 
     public void cone_up_high_spate(){
@@ -435,22 +446,31 @@ public class TeleOpAdaptedMecanumDrive extends MecanumDrive {
             robot_height = Height.HIGH;
         }
         servo_rotation.setPosition(servo_rot_up);
-        servo_brat_jos.setPosition(0.69);
-        servo_brat_sus.setPosition(0);
+        servo_brat_jos.setPosition(0.97);
+        servo_brat_sus.setPosition(0.62);
     }
 
 
     public void pickup_stack(int pos){
         switch(pos){
             case 1:
+                servo_brat_jos.setPosition(0.25);
+                servo_brat_sus.setPosition(0.65);
                 break;
             case 2:
+                servo_brat_jos.setPosition(0.2);
+                servo_brat_sus.setPosition(0.7);
                 break;
             case 3:
+                servo_brat_jos.setPosition(0.15);
+                servo_brat_sus.setPosition(0.70);
                 break;
             case 4:
+                servo_brat_jos.setPosition(0.1);
+                servo_brat_sus.setPosition(0.75);
                 break;
         }
+        robot_height = Height.LOW;
     }
 //    public void cone_up_spate(){
 //        servo_brat_jos.setPosition(0.4);

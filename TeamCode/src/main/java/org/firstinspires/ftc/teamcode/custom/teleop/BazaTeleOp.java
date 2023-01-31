@@ -4,6 +4,7 @@ package org.firstinspires.ftc.teamcode.custom.teleop;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 @TeleOp(name = "BazaTeleOp", group = "TeleOp")
@@ -11,6 +12,12 @@ public class BazaTeleOp extends OpMode {
     public ElapsedTime runtime = new ElapsedTime();
     public TeleOpAdaptedMecanumDrive robot = new TeleOpAdaptedMecanumDrive(hardwareMap);
     double joyScale = 0.8;
+    boolean up_flag = true;
+    boolean down_flag = true;
+
+    double time = runtime.seconds();
+    double up_time = 0;
+    double down_time = 0;
 
     private int speed = 3;
 
@@ -38,6 +45,19 @@ public class BazaTeleOp extends OpMode {
             }
         }
         if(robot.rrmode) {
+//            if(gamepad1.a){
+//                robot.pickup_stack(1);
+//            }
+//            if(gamepad1.x){
+//                robot.pickup_stack(2);
+//            }
+//            if(gamepad1.y){
+//                robot.pickup_stack(3);
+//            }
+//            if(gamepad1.b){
+//                robot.pickup_stack(4);
+//            }
+
             if (gamepad2.left_trigger > 0.5) {
                 robot.openGripper();
                 telemetry.addData("Gripper", robot.gripper.getPosition());
@@ -58,6 +78,13 @@ public class BazaTeleOp extends OpMode {
                 telemetry.addData("target-lift2", robot.lift_ctrl.getTargetPosition());
                 telemetry.addData("height", robot.robot_height);
             }
+            telemetry.addData("encoderl", robot.leftRear.getCurrentPosition());
+            telemetry.addData("powerl", robot.leftRear.getPower());
+            telemetry.addData("velol", robot.leftRear.getVelocity());
+
+            telemetry.addData("encoderr", robot.rightRear.getCurrentPosition());
+            telemetry.addData("pwoerr", robot.rightRear.getPower());
+            telemetry.addData("velor", robot.rightRear.getVelocity());
             if (gamepad2.a){
                 robot.pickup_fata();
             }
@@ -88,18 +115,24 @@ public class BazaTeleOp extends OpMode {
 //                robot.pickup_fata();
 //            }
             if(gamepad1.right_bumper){
-                int ent_speed = speed;
-                if(ent_speed == 1){
-                    speed = 2;
-                }
-                else{
-                    speed = 3;
+                if(up_time+500 < runtime.milliseconds()) {
+                    if (up_flag) {
+                        speed += (speed < 3 ? 1 : 0);
+                    }
+                    up_time = runtime.milliseconds();
                 }
             }
             if(gamepad1.left_bumper){
-                speed -= (speed > 1 ? 1 : 0);
+                if(down_time+500 < runtime.milliseconds()){
+                    if(down_flag) {
+                        speed -= (speed > 1 ? 1 : 0);
+                    }
+                    down_time = runtime.milliseconds();
+                }
             }
+
         }
+        telemetry.addData("speed", speed);
         if (robot.chassis_test && robot.rrmode) {
             switch(speed){
                 case 1:

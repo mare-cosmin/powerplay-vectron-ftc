@@ -20,9 +20,10 @@ public class AutonomieParking extends LinearOpMode {
         sleep(100);
         detectare.initCV(hardwareMap);
         robot.stopAndResetEncodersCHASSIS();
-        while(!opModeIsActive()){
+        while(opModeInInit()){
             tag = detectare.detect();
-            telemetry.addData("tag", tag);
+            telemetry.addData("tag", (tag == 0 ? tag : tag%3+1));
+            telemetry.update();
         }
     }
 
@@ -30,22 +31,17 @@ public class AutonomieParking extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         init(hardwareMap);
 
-        telemetry.addData("tag", tag);
+        telemetry.addData("tag", tag%3+1);
         telemetry.update();
 
         waitForStart();
         if(isStopRequested()) return;
-        runtime.reset();
-        double timeflag = 15;
-        sleep(300);
-        while (tag == 0 && runtime.seconds() <= timeflag && !isStopRequested()){
-            tag = detectare.detect();
-        }
+
         robot.closeGripper();
         sleep(600);
         robot.auto_position();
         sleep(600);
-        robot.moveRight(1, 80);
+        robot.moveRight(0.8, 85);
         if(tag != 0) {
             if (first_time) {
                 sleep(2000);
@@ -55,31 +51,26 @@ public class AutonomieParking extends LinearOpMode {
             }
             switch (tag) {
                 case 3:
-                    robot.moveForward(1, 55);
+                    robot.moveForward(0.8, 58);
                     telemetry.addData("parking", "Left");
                     break;
 
                 case 4:
+                    robot.moveForward(0.3, 2);
                     telemetry.addData("parking", "Center");
                     break;
                 case 5:
-                    robot.moveReverse(1, 60);
+                    robot.moveReverse(0.8, 55);
                     telemetry.addData("parking", "Right");
                     break;
             }
-        }
-        robot.closeGripper();
-        while(!isStopRequested() && opModeIsActive()){
-
-
-            telemetry.addData("tag", tag);
-            telemetry.addData("tpos", robot.leftFront.getTargetPosition());
-            telemetry.addData("cpos", robot.leftFront.getCurrentPosition());
-            telemetry.addData("pow", robot.leftFront.getPower());
-            telemetry.addData("wheel", robot.leftFront.getDeviceName());
             telemetry.update();
         }
-        while (!isStopRequested()){
+        robot.closeGripper();
+        sleep(2000);
+        robot.servo_brat_jos.setPosition(0);
+
+        while (opModeIsActive()){
             idle();
         }
     }

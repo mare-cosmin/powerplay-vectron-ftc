@@ -1,11 +1,13 @@
 package org.firstinspires.ftc.teamcode.custom.autonomie;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.custom.teleop.TeleOpAdaptedMecanumDrive;
 
+@Disabled
 @Autonomous(name="testParking", group="Autonomie")
 public class ParkingTest extends LinearOpMode {
     TeleOpAdaptedMecanumDrive robot;
@@ -23,7 +25,6 @@ public class ParkingTest extends LinearOpMode {
         telemetry.addData("before", "before");
         telemetry.update();
         while(!isStopRequested() && !isStarted()){
-            telemetry.addData("in", "in");
             tag = detectare.detect();
             telemetry.addData("tag", tag);
             telemetry.update();
