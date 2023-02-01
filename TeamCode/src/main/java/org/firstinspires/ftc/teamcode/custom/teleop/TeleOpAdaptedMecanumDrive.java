@@ -338,7 +338,7 @@ public class TeleOpAdaptedMecanumDrive extends MecanumDrive {
         int target = -(int) (distance * COUNTS_PER_CM);
 
         rightFront.setTargetPosition(target);
-        leftFront.setTargetPosition(-target);
+        leftFront.setTargetPosition(-(target + 150));
         leftRear.setTargetPosition(target);
         rightRear.setTargetPosition(-target);
 

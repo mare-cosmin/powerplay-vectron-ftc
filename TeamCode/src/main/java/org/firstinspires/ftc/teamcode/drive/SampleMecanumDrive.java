@@ -57,10 +57,10 @@ import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kV;
  */
 @Config
 public class SampleMecanumDrive extends MecanumDrive {
-    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(0, 0, 0);
-    public static PIDCoefficients HEADING_PID = new PIDCoefficients(0, 0, 0);
+    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(4, 0, 0);
+    public static PIDCoefficients HEADING_PID = new PIDCoefficients(3, 0, 0);
 
-    public static double LATERAL_MULTIPLIER = 1.1526;
+    public static double LATERAL_MULTIPLIER = 1.1;
 
     public static double VX_WEIGHT = 1;
     public static double VY_WEIGHT = 1;
@@ -195,6 +195,11 @@ public class SampleMecanumDrive extends MecanumDrive {
         leftRear.setDirection(DcMotorSimple.Direction.REVERSE);
 
         motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront);
+
+        closeGripper();
+        int x = 0;
+        while(x<10000) x++;
+        cone_up_low_fata();
 
         for (DcMotorEx motor : motors) {
             MotorConfigurationType motorConfigurationType = motor.getMotorType().clone();
@@ -515,14 +520,24 @@ public class SampleMecanumDrive extends MecanumDrive {
 
 
     public void pickup_stack(int pos){
+        liftDown();
+        robot_height = TeleOpAdaptedMecanumDrive.Height.LOW;
         switch(pos){
             case 1:
+                servo_brat_jos.setPosition(0.25);
+                servo_brat_sus.setPosition(0.65);
                 break;
             case 2:
+                servo_brat_jos.setPosition(0.2);
+                servo_brat_sus.setPosition(0.7);
                 break;
             case 3:
+                servo_brat_jos.setPosition(0.15);
+                servo_brat_sus.setPosition(0.70);
                 break;
             case 4:
+                servo_brat_jos.setPosition(0.1);
+                servo_brat_sus.setPosition(0.75);
                 break;
         }
     }
