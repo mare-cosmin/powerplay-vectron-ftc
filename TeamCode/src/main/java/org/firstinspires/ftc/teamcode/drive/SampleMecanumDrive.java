@@ -390,7 +390,7 @@ public class SampleMecanumDrive extends MecanumDrive {
         return new ProfileAccelerationConstraint(maxAccel);
     }
     public void closeGripper(){
-        gripper.setPosition(0.4);
+        gripper.setPosition(0.5);
     }
     public void openGripper(){
         gripper.setPosition(0.2);
@@ -522,22 +522,24 @@ public class SampleMecanumDrive extends MecanumDrive {
     public void pickup_stack(int pos){
         liftDown();
         robot_height = TeleOpAdaptedMecanumDrive.Height.LOW;
+        servo_rotation.setPosition(servo_rot_down);
+        openGripper();
         switch(pos){
             case 1:
-                servo_brat_jos.setPosition(0.25);
+                servo_brat_jos.setPosition(0.22);
                 servo_brat_sus.setPosition(0.65);
                 break;
             case 2:
                 servo_brat_jos.setPosition(0.2);
-                servo_brat_sus.setPosition(0.7);
+                servo_brat_sus.setPosition(0.665);
                 break;
             case 3:
                 servo_brat_jos.setPosition(0.15);
-                servo_brat_sus.setPosition(0.70);
+                servo_brat_sus.setPosition(0.68);
                 break;
             case 4:
                 servo_brat_jos.setPosition(0.1);
-                servo_brat_sus.setPosition(0.75);
+                servo_brat_sus.setPosition(0.695);
                 break;
         }
     }

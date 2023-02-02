@@ -12,7 +12,6 @@ import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 //@Disabled
 @Autonomous(name="RBTest", group="Autonomie")
 public class RBAuto extends LinearOpMode {
-    private double y = 9;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -22,7 +21,7 @@ public class RBAuto extends LinearOpMode {
         int tag = 0;
         detectare.initCV(hardwareMap);
 
-        while(!isStopRequested() && !isStarted()){
+        while (opModeInInit()) {
             tag = detectare.detect();
             telemetry.addData("tag", tag);
             telemetry.update();
@@ -33,31 +32,42 @@ public class RBAuto extends LinearOpMode {
 //        drive.cone_down_low_fata();
 
         double x_pickup = 51;
-        double x_drop = 8;
+        double x_drop = 4;
         double x_mid = 35.4;
 
+        double y = 9;
         TrajectorySequence baseSeq = drive.trajectorySequenceBuilder(startPose)
+                .lineToConstantHeading(new Vector2d(x_mid, -y + 10))
+                .waitSeconds(0.5)
                 .lineToConstantHeading(new Vector2d(x_mid, -y))
 
-                .UNSTABLE_addTemporalMarkerOffset(0.5, drive::cone_up_high_spate)
+                .UNSTABLE_addTemporalMarkerOffset(0.5, drive::cone_up_high_fata)
 
-                .lineToSplineHeading(new Pose2d(x_drop, -y, Math.toRadians(50)))
+                .turn(-Math.toRadians(25))
+                .forward(1.5)
+//                .strafeLeft(3)
+//                .lineToSplineHeading(new Pose2d(x_drop, -y, Math.toRadians(50)))
 
                 .waitSeconds(0.5)
                 .UNSTABLE_addTemporalMarkerOffset(0, drive::openGripper)
                 .waitSeconds(0.5)
 
-                .lineToSplineHeading(new Pose2d(x_mid, -y, Math.toRadians(0)))
-
                 .UNSTABLE_addTemporalMarkerOffset(0.5, () -> {
                     drive.pickup_stack(1);
                 })
 
-                .splineToConstantHeading(new Vector2d(x_pickup, -y), Math.toRadians(0))
+                .turn(-Math.toRadians(155))
 
                 .waitSeconds(0.5)
+
+//                .lineToSplineHeading(new Pose2d(x_mid, -y, Math.toRadians(0)))
+
+                .splineToConstantHeading(new Vector2d(x_pickup, -y), Math.toRadians(0))
+
+                .waitSeconds(1)
                 .UNSTABLE_addTemporalMarkerOffset(0, drive::closeGripper)
-                .waitSeconds(0.5)
+                .UNSTABLE_addTemporalMarkerOffset(0.1, drive::cone_up_low_fata)
+                .waitSeconds(1)
 
                 //cone 1
                 .lineToConstantHeading(new Vector2d(x_mid, -y))
@@ -65,58 +75,60 @@ public class RBAuto extends LinearOpMode {
                 .UNSTABLE_addTemporalMarkerOffset(0.5, drive::cone_up_high_spate)
 
 
-                .lineToSplineHeading(new Pose2d(x_drop, -y, Math.toRadians(50)))
+                .lineToSplineHeading(new Pose2d(x_drop + 4, -y-2, Math.toRadians(50)))
 
-                .waitSeconds(0.5)
+                .waitSeconds(1)
                 .UNSTABLE_addTemporalMarkerOffset(0, drive::openGripper)
                 .waitSeconds(0.5)
-
-                .lineToSplineHeading(new Pose2d(x_mid, -y, Math.toRadians(0)))
-
-                .UNSTABLE_addTemporalMarkerOffset(0.5, () -> {
-                    drive.pickup_stack(1);
-                })
-
-                .splineToConstantHeading(new Vector2d(x_pickup, -y), Math.toRadians(0))
-
-                .waitSeconds(0.5)
-                .UNSTABLE_addTemporalMarkerOffset(0, drive::closeGripper)
-                .waitSeconds(0.5)
-
-                //cone 2
-
-                .lineToConstantHeading(new Vector2d(x_mid, -y+2))
-
-                .UNSTABLE_addTemporalMarkerOffset(0.5, drive::cone_up_high_spate)
-
-                .lineToSplineHeading(new Pose2d(x_drop, -y+4, Math.toRadians(50)))
-
-                .waitSeconds(0.5)
-                .UNSTABLE_addTemporalMarkerOffset(0, drive::openGripper)
-                .waitSeconds(0.5)
-
-                .lineToSplineHeading(new Pose2d(x_mid, -y+4, Math.toRadians(0)))
 
                 .UNSTABLE_addTemporalMarkerOffset(0.5, () -> {
                     drive.pickup_stack(2);
                 })
 
-                .splineToConstantHeading(new Vector2d(x_pickup, -y+4), Math.toRadians(0))
+                .lineToSplineHeading(new Pose2d(x_mid, -y, Math.toRadians(0)))
 
-                .waitSeconds(0.5)
+                .splineToConstantHeading(new Vector2d(x_pickup + 2, -y), Math.toRadians(0))
+
+                .waitSeconds(1)
                 .UNSTABLE_addTemporalMarkerOffset(0, drive::closeGripper)
+                .UNSTABLE_addTemporalMarkerOffset(0.1, drive::cone_up_low_fata)
+                .waitSeconds(1)
+
+                //cone 2
+
+                .lineToConstantHeading(new Vector2d(x_mid, -y + 2))
+
+                .UNSTABLE_addTemporalMarkerOffset(0.5, drive::cone_up_high_spate)
+
+                .lineToSplineHeading(new Pose2d(x_drop + 8, -y - 2, Math.toRadians(50)))
+
+                .waitSeconds(1)
+                .UNSTABLE_addTemporalMarkerOffset(0, drive::openGripper)
                 .waitSeconds(0.5)
+
+                .UNSTABLE_addTemporalMarkerOffset(0.5, () -> {
+                    drive.pickup_stack(3);
+                })
+
+                .lineToSplineHeading(new Pose2d(x_mid, -y + 4, Math.toRadians(0)))
+
+                .splineToConstantHeading(new Vector2d(x_pickup + 4, -y + 4), Math.toRadians(0))
+
+                .waitSeconds(1)
+                .UNSTABLE_addTemporalMarkerOffset(0, drive::closeGripper)
+                .UNSTABLE_addTemporalMarkerOffset(0.1, drive::cone_up_low_fata)
+                .waitSeconds(1)
 
                 //cone 3
 
-                .lineToConstantHeading(new Vector2d(x_mid, -y+4))
+                .lineToConstantHeading(new Vector2d(x_mid, -y + 4))
 
                 .UNSTABLE_addTemporalMarkerOffset(0.5, drive::cone_up_high_spate)
 
 
-                .lineToSplineHeading(new Pose2d(x_drop, -y+4, Math.toRadians(50)))
+                .lineToSplineHeading(new Pose2d(x_drop + 12, -y - 3, Math.toRadians(50)))
 
-                .waitSeconds(0.5)
+                .waitSeconds(1)
                 .UNSTABLE_addTemporalMarkerOffset(0, drive::openGripper)
                 .waitSeconds(0.5)
 ////                .lineToSplineHeading(new Pose2d(35.4, -y-2, Math.toRadians(0)))
@@ -167,41 +179,38 @@ public class RBAuto extends LinearOpMode {
 
         waitForStart();
 
-        if(!isStopRequested()){
+        if (!isStopRequested()) {
             drive.followTrajectorySequence(baseSeq);
-            if(tag == 4) {
+            if (tag == 4) {
                 TrajectorySequence park2Seq = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                         .UNSTABLE_addTemporalMarkerOffset(0.5, () -> {
-                            drive.pickup_stack(1);
+                            drive.pickup_stack(4);
                         })
-                        .lineToSplineHeading(new Pose2d(35.4, -y, Math.toRadians(0)))
+                        .lineToLinearHeading(new Pose2d(12, -y + 3, Math.toRadians(0)))
                         .build();
                 drive.followTrajectorySequence(park2Seq);
-            }else {
+            } else {
                 if (tag == 5) {
                     TrajectorySequence park3Seq = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                             .UNSTABLE_addTemporalMarkerOffset(0.5, () -> {
-                                drive.pickup_stack(1);
+                                drive.pickup_stack(4);
                             })
-                            .lineToConstantHeading(new Vector2d(60, -y))
+                            .lineToLinearHeading(new Pose2d(12, -y + 3, Math.toRadians(0)))
                             .build();
                     drive.followTrajectorySequence(park3Seq);
                 } else {
                     TrajectorySequence park1Seq = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                             .UNSTABLE_addTemporalMarkerOffset(0.5, () -> {
-                                drive.pickup_stack(1);
+                                drive.pickup_stack(4);
                             })
-                            .lineToConstantHeading(new Vector2d(12, -y+3))
+                            .lineToLinearHeading(new Pose2d(12, -y + 3, Math.toRadians(0)))
                             .build();
                     drive.followTrajectorySequence(park1Seq);
                 }
             }
         }
-        while(opModeIsActive()){
+        while (opModeIsActive()) {
             idle();
         }
-    }
-    private void decrementY(){
-        --y;
     }
 }

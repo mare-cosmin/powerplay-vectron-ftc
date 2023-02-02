@@ -45,18 +45,18 @@ public class BazaTeleOp extends OpMode {
             }
         }
         if(robot.rrmode) {
-//            if(gamepad1.a){
-//                robot.pickup_stack(1);
-//            }
-//            if(gamepad1.x){
-//                robot.pickup_stack(2);
-//            }
-//            if(gamepad1.y){
-//                robot.pickup_stack(3);
-//            }
-//            if(gamepad1.b){
-//                robot.pickup_stack(4);
-//            }
+            if(gamepad1.a){
+                robot.pickup_stack(1);
+            }
+            if(gamepad1.x){
+                robot.pickup_stack(2);
+            }
+            if(gamepad1.y){
+                robot.pickup_stack(3);
+            }
+            if(gamepad1.b){
+                robot.pickup_stack(4);
+            }
 
             if (gamepad2.left_trigger > 0.5) {
                 robot.openGripper();

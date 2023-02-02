@@ -439,10 +439,10 @@ public class TeleOpAdaptedMecanumDrive extends MecanumDrive {
 
     public void cone_up_high_spate(){
         if(robot_height.equals(Height.MEDIUM)){
-            lift_pos_up(700);
+            lift_pos_up(650);
             robot_height = Height.HIGH;
         }else if(robot_height.equals(Height.LOW)){
-            lift_pos_up(700);
+            lift_pos_up(650);
             robot_height = Height.HIGH;
         }
         servo_rotation.setPosition(servo_rot_up);
