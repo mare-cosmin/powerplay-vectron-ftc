@@ -274,11 +274,15 @@ public class TeleOpAdaptedMecanumDrive extends MecanumDrive {
         lift_exp.setTargetPosition(-pos);
         lift_ctrl.setTargetPosition(pos);
 
+        if(lift_exp.getCurrentPosition() * lift_ctrl.getCurrentPosition() == 0){
+            return;
+        }
+
         if(lift_exp.getCurrentPosition() <= pos+80){
             lift_exp.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             lift_ctrl.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            lift_exp.setPower(0.5);
-            lift_ctrl.setPower(0.5);
+            lift_exp.setPower(0.3);
+            lift_ctrl.setPower(0.3);
         }
         else{
             lift_exp.setPower(0);
@@ -289,11 +293,11 @@ public class TeleOpAdaptedMecanumDrive extends MecanumDrive {
         lift_exp.setTargetPosition(-pos);
         lift_ctrl.setTargetPosition(pos);
 
-        if (lift_exp.getCurrentPosition() <= pos + 10 && (robot_height.equals(Height.LOW) || robot_height.equals(Height.MEDIUM))) {
-            lift_ctrl.setPower(1);
-            lift_exp.setPower(1);
+        if (robot_height.equals(Height.LOW) || robot_height.equals(Height.MEDIUM)) {
             lift_ctrl.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             lift_exp.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            lift_ctrl.setPower(1);
+            lift_exp.setPower(1);
         } else {
             lift_exp.setPower(0);
             lift_ctrl.setPower(0);
@@ -384,7 +388,7 @@ public class TeleOpAdaptedMecanumDrive extends MecanumDrive {
         robot_height = Height.LOW;
 
         servo_rotation.setPosition(servo_rot_down);
-        servo_brat_jos.setPosition(0.62);
+        servo_brat_jos.setPosition(0.60);
         servo_brat_sus.setPosition(1);
     } //jos mai jos
 
@@ -394,7 +398,7 @@ public class TeleOpAdaptedMecanumDrive extends MecanumDrive {
             robot_height = Height.MEDIUM;
         }
         servo_rotation.setPosition(servo_rot_down);
-        servo_brat_jos.setPosition(0.666);
+        servo_brat_jos.setPosition(0.62);
         servo_brat_sus.setPosition(0.97);
     } //jos mai jos
 
@@ -407,8 +411,8 @@ public class TeleOpAdaptedMecanumDrive extends MecanumDrive {
             robot_height = Height.HIGH;
         }
         servo_rotation.setPosition(servo_rot_down);
-        servo_brat_jos.setPosition(0.33);
-        servo_brat_sus.setPosition(0.57);
+        servo_brat_jos.setPosition(0.42);
+        servo_brat_sus.setPosition(0.78);
     }
 
     public void cone_up_low_spate(){

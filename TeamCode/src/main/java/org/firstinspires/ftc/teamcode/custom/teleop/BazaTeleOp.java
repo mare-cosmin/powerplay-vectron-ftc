@@ -45,18 +45,18 @@ public class BazaTeleOp extends OpMode {
             }
         }
         if(robot.rrmode) {
-            if(gamepad1.a){
+            if(gamepad1.x){
                 robot.pickup_stack(1);
             }
-            if(gamepad1.x){
-                robot.pickup_stack(2);
-            }
-            if(gamepad1.y){
-                robot.pickup_stack(3);
-            }
-            if(gamepad1.b){
-                robot.pickup_stack(4);
-            }
+//            if(gamepad1.x){
+//                robot.pickup_stack(2);
+//            }
+//            if(gamepad1.y){
+//                robot.pickup_stack(3);
+//            }
+//            if(gamepad1.b){
+//                robot.pickup_stack(4);
+//            }
 
             if (gamepad2.left_trigger > 0.5) {
                 robot.openGripper();
@@ -116,17 +116,13 @@ public class BazaTeleOp extends OpMode {
 //            }
             if(gamepad1.right_bumper){
                 if(up_time+500 < runtime.milliseconds()) {
-                    if (up_flag) {
-                        speed += (speed < 3 ? 1 : 0);
-                    }
+                    speed += (speed < 3 ? 1 : 0);
                     up_time = runtime.milliseconds();
                 }
             }
             if(gamepad1.left_bumper){
                 if(down_time+500 < runtime.milliseconds()){
-                    if(down_flag) {
-                        speed -= (speed > 1 ? 1 : 0);
-                    }
+                    speed -= (speed > 1 ? 1 : 0);
                     down_time = runtime.milliseconds();
                 }
             }

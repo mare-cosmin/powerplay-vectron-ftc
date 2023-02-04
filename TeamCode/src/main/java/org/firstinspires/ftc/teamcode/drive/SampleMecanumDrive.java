@@ -105,7 +105,7 @@ public class SampleMecanumDrive extends MecanumDrive {
     public boolean backwards = false;
 
     private final double servo_rot_up = 0.2;
-    private final double servo_rot_down = 0.85;
+    public final double servo_rot_down = 0.85;
 
 
     public SampleMecanumDrive(HardwareMap hardwareMap) {
@@ -460,7 +460,7 @@ public class SampleMecanumDrive extends MecanumDrive {
 
         servo_rotation.setPosition(servo_rot_down);
         servo_brat_jos.setPosition(0.66);
-        servo_brat_sus.setPosition(1);
+//        servo_brat_sus.setPosition(1);
     } //jos mai jos
 
     public void cone_up_mid_fata(){
@@ -482,8 +482,8 @@ public class SampleMecanumDrive extends MecanumDrive {
             robot_height = TeleOpAdaptedMecanumDrive.Height.HIGH;
         }
         servo_rotation.setPosition(servo_rot_down);
-        servo_brat_jos.setPosition(0.4);
-        servo_brat_sus.setPosition(0.6);
+        servo_brat_jos.setPosition(0.45);
+        servo_brat_sus.setPosition(0.7);
     }
 
     public void cone_up_low_spate(){
@@ -514,8 +514,8 @@ public class SampleMecanumDrive extends MecanumDrive {
             robot_height = TeleOpAdaptedMecanumDrive.Height.HIGH;
         }
         servo_rotation.setPosition(servo_rot_up);
-        servo_brat_jos.setPosition(0.97);
-        servo_brat_sus.setPosition(0.69);
+        servo_brat_jos.setPosition(0.84);
+        servo_brat_sus.setPosition(0.75);
     }
 
 
@@ -526,20 +526,20 @@ public class SampleMecanumDrive extends MecanumDrive {
         openGripper();
         switch(pos){
             case 1:
-                servo_brat_jos.setPosition(0.22);
-                servo_brat_sus.setPosition(0.65);
+                servo_brat_jos.setPosition(0.225);
+//                servo_brat_sus.setPosition(0.65);
                 break;
             case 2:
                 servo_brat_jos.setPosition(0.2);
-                servo_brat_sus.setPosition(0.665);
+//                servo_brat_sus.setPosition(0.665);
                 break;
             case 3:
                 servo_brat_jos.setPosition(0.15);
-                servo_brat_sus.setPosition(0.68);
+//                servo_brat_sus.setPosition(0.68);
                 break;
             case 4:
                 servo_brat_jos.setPosition(0.1);
-                servo_brat_sus.setPosition(0.695);
+//                servo_brat_sus.setPosition(0.695);
                 break;
         }
     }
