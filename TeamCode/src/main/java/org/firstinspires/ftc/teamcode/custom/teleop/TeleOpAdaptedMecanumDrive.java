@@ -305,7 +305,7 @@ public class TeleOpAdaptedMecanumDrive extends MecanumDrive {
     }
     public void moveForward(double power,double distance) {
 
-//        stopAndResetEncodersCHASSIS();
+        stopAndResetEncodersCHASSIS();
 
         int target =  (int)(distance * COUNTS_PER_CM);
 
@@ -390,7 +390,7 @@ public class TeleOpAdaptedMecanumDrive extends MecanumDrive {
         servo_rotation.setPosition(servo_rot_down);
         servo_brat_jos.setPosition(0.60);
         servo_brat_sus.setPosition(1);
-    } //jos mai jos
+    }
 
     public void cone_up_mid_fata(){
         if(robot_height.equals(Height.LOW)) {
@@ -400,19 +400,18 @@ public class TeleOpAdaptedMecanumDrive extends MecanumDrive {
         servo_rotation.setPosition(servo_rot_down);
         servo_brat_jos.setPosition(0.62);
         servo_brat_sus.setPosition(0.97);
-    } //jos mai jos
-
+    }
     public void cone_up_high_fata(){
         if(robot_height.equals(Height.MEDIUM)){
-            lift_pos_up(650);
+            lift_pos_up(700);
             robot_height = Height.HIGH;
         }else if(robot_height.equals(Height.LOW)){
-            lift_pos_up(650);
+            lift_pos_up(700);
             robot_height = Height.HIGH;
         }
         servo_rotation.setPosition(servo_rot_down);
         servo_brat_jos.setPosition(0.42);
-        servo_brat_sus.setPosition(0.78);
+        servo_brat_sus.setPosition(0.66);
     }
 
     public void cone_up_low_spate(){

@@ -57,10 +57,10 @@ import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kV;
  */
 @Config
 public class SampleMecanumDrive extends MecanumDrive {
-    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(4, 0, 0);
-    public static PIDCoefficients HEADING_PID = new PIDCoefficients(3, 0, 0);
+    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(0, 0, 0);
+    public static PIDCoefficients HEADING_PID = new PIDCoefficients(0, 0, 0);
 
-    public static double LATERAL_MULTIPLIER = 1.1;
+    public static double LATERAL_MULTIPLIER = 1.17;
 
     public static double VX_WEIGHT = 1;
     public static double VY_WEIGHT = 1;
@@ -79,11 +79,7 @@ public class SampleMecanumDrive extends MecanumDrive {
     private BNO055IMU imu;
     private VoltageSensor batteryVoltageSensor;
 
-    public enum Height{
-        HIGH,
-        MEDIUM,
-        LOW
-    }
+    public double compensation = 1;
 
     public TeleOpAdaptedMecanumDrive.Height robot_height = TeleOpAdaptedMecanumDrive.Height.LOW;
 
@@ -363,6 +359,13 @@ public class SampleMecanumDrive extends MecanumDrive {
 
     @Override
     public void setMotorPowers(double v, double v1, double v2, double v3) {
+        compensation = (12.7 / batteryVoltageSensor.getVoltage());
+
+        v = v * compensation;
+        v1 = v1 * compensation;
+        v2 = v2 * compensation;
+        v3 = v3 * compensation;
+
         leftFront.setPower(v);
         leftRear.setPower(v1);
         rightRear.setPower(v2);
@@ -440,7 +443,7 @@ public class SampleMecanumDrive extends MecanumDrive {
         openGripper();
         servo_rotation.setPosition(servo_rot_down);
 
-        servo_brat_sus.setPosition(0.43);
+        servo_brat_sus.setPosition(0.44);
         servo_brat_jos.setPosition(0.04);
         robot_height = TeleOpAdaptedMecanumDrive.Height.LOW;
     }
@@ -449,8 +452,8 @@ public class SampleMecanumDrive extends MecanumDrive {
         liftDown();
         robot_height = TeleOpAdaptedMecanumDrive.Height.LOW;
         servo_rotation.setPosition(servo_rot_down);
-        servo_brat_sus.setPosition(0.43);
-        servo_brat_jos.setPosition(0.04);
+        servo_brat_sus.setPosition(0.57);
+        servo_brat_jos.setPosition(0.02);
 
     }
 
@@ -482,7 +485,7 @@ public class SampleMecanumDrive extends MecanumDrive {
             robot_height = TeleOpAdaptedMecanumDrive.Height.HIGH;
         }
         servo_rotation.setPosition(servo_rot_down);
-        servo_brat_jos.setPosition(0.45);
+        servo_brat_jos.setPosition(0.43);
         servo_brat_sus.setPosition(0.7);
     }
 
@@ -507,15 +510,15 @@ public class SampleMecanumDrive extends MecanumDrive {
 
     public void cone_up_high_spate(){
         if(robot_height.equals(TeleOpAdaptedMecanumDrive.Height.MEDIUM)){
-            lift_pos_up(700);
+            lift_pos_up(650);
             robot_height = TeleOpAdaptedMecanumDrive.Height.HIGH;
         }else if(robot_height.equals(TeleOpAdaptedMecanumDrive.Height.LOW)){
-            lift_pos_up(700);
+            lift_pos_up(650);
             robot_height = TeleOpAdaptedMecanumDrive.Height.HIGH;
         }
         servo_rotation.setPosition(servo_rot_up);
-        servo_brat_jos.setPosition(0.84);
-        servo_brat_sus.setPosition(0.75);
+        servo_brat_jos.setPosition(0.97);
+        servo_brat_sus.setPosition(0.62);
     }
 
 

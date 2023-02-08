@@ -41,7 +41,7 @@ public class AutonomieParking extends LinearOpMode {
         sleep(600);
         robot.auto_position();
         sleep(600);
-        robot.moveRight(0.8, 100);
+        robot.moveForward(1, 100);
 //        if(tag != 0) {
 //            if (first_time) {
 //                sleep(2000);
